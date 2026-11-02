@@ -145,11 +145,16 @@ export const portfolioData: PortfolioData = {
       issuer: 'WorldQuant BRAIN',
       category: 'Quant & Algorithmic Challenge',
       level: 'Gold Milestone',
+      credentialBadge: 'Gold Level Milestone',
+      hasGenuineFile: true,
+      fileType: 'pdf',
+      fileSize: '268 KB',
       certificatePath: '/assets/aistudio/WorldQuant_Gold_Certificate_fd9a9343.pdf',
       authority: 'Nitish Maini, Chief Strategy Officer of WorldQuant',
       summary:
         'Awarded Certificate of Accomplishment for reaching Gold Level in the global WorldQuant Challenge®, demonstrating disciplined quantitative modeling and mathematical problem-solving.',
       verificationStatus: 'verified',
+      milestoneOrder: 1,
     },
     {
       id: 'achieve-worldquant-silver',
@@ -157,9 +162,13 @@ export const portfolioData: PortfolioData = {
       issuer: 'WorldQuant BRAIN',
       category: 'Quant & Algorithmic Challenge',
       level: 'Silver Milestone',
+      credentialBadge: 'Silver Level Milestone',
+      hasGenuineFile: false,
+      pendingUploadNote: 'Milestone Verified · Official Certificate PDF Pending Upload',
       summary:
         'Achieved Silver Level milestone in the WorldQuant Challenge®, developing predictive financial alpha signals and statistical algorithms.',
       verificationStatus: 'verified',
+      milestoneOrder: 2,
     },
     {
       id: 'achieve-worldquant-bronze',
@@ -167,9 +176,13 @@ export const portfolioData: PortfolioData = {
       issuer: 'WorldQuant BRAIN',
       category: 'Quant & Algorithmic Challenge',
       level: 'Bronze Milestone',
+      credentialBadge: 'Bronze Level Milestone',
+      hasGenuineFile: false,
+      pendingUploadNote: 'Milestone Verified · Official Certificate PDF Pending Upload',
       summary:
         'Reached Bronze Level milestone in the WorldQuant Challenge®, marking the initial benchmark in quantitative research and alpha construction.',
       verificationStatus: 'verified',
+      milestoneOrder: 3,
     },
     {
       id: 'achieve-hacktoberfest-2026',
@@ -177,10 +190,15 @@ export const portfolioData: PortfolioData = {
       issuer: 'Hacktoberfest (MLH x DEV x DigitalOcean)',
       category: 'Open Source & Hackathon',
       date: 'October 31, 2026',
+      credentialBadge: 'In-Person Community Milestone',
+      hasGenuineFile: true,
+      fileType: 'pdf',
+      fileSize: '62 KB',
       certificatePath: '/assets/aistudio/HacktoberFest_Certificate_9daf99fa.pdf',
       summary:
         'Participated in-person at Hacktoberfest Hack Day Sonipat x Rishihood University on October 31, 2026, collaborating with developers on open-source repositories and community software tooling.',
       verificationStatus: 'verified',
+      milestoneOrder: 4,
     },
   ],
 

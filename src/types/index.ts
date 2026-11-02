@@ -94,6 +94,13 @@ export interface AchievementEntry extends BaseRecord {
   certificatePath?: string;
   summary: string;
   authority?: string;
+  hasGenuineFile: boolean;
+  fileType?: 'pdf' | 'image';
+  fileSize?: string;
+  verificationUrl?: string;
+  pendingUploadNote?: string;
+  credentialBadge?: string;
+  milestoneOrder?: number;
 }
 
 export interface PendingConfirmationItem {

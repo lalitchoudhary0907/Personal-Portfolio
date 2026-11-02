@@ -142,7 +142,7 @@ export const HeroSection: React.FC = () => {
                 </Button>
               </a>
 
-              <a href={`mailto:${portfolioData.personalInfo.email}`}>
+              <a href="#contact">
                 <Button
                   variant="outline"
                   size="md"
