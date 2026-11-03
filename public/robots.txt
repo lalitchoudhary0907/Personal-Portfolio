@@ -1,0 +1,9 @@
+# robots.txt for Lalit Choudhary Portfolio
+# Search crawlers: Allow site indexing while protecting internal API endpoints
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Canonical Sitemap Reference
+Sitemap: /sitemap.xml

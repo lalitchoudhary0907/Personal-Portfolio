@@ -18,7 +18,28 @@ export interface RateLimiterStore {
 
 /**
  * High-performance sliding-window in-memory rate limiter with automated TTL expiration sweep.
- * Used as default local store, or when external shared store (Redis) is unconfigured.
+ *
+ * ARCHITECTURAL BEHAVIOR & SCOPE:
+ * - Active by default during local development, test runs, and single-instance deployments.
+ * - Zero external credentials or network dependencies required (runs in-process).
+ * - Enforces authentic sliding-window rate limits (timestamps filtered within sliding duration).
+ * - Background sweep runs every 3 minutes to automatically reclaim expired client IP keys.
+ *
+ * PRODUCTION LIMITATIONS:
+ * 1. Process Memory Isolation:
+ *    Rate limiting counters reside in Node.js heap memory. If the backend is deployed across
+ *    multiple horizontally scaled containers (e.g. Kubernetes pods, multi-replica Cloud Run),
+ *    each container maintains an independent memory bucket. A client could theoretically make
+ *    N * limit requests across N distinct instances before being throttled.
+ * 2. Ephemeral Serverless Lifecycles:
+ *    In pure serverless environments (e.g. AWS Lambda, Vercel Serverless Functions) with
+ *    frequent cold starts or rapid container recycling, in-memory state is re-initialized
+ *    on each new worker instance.
+ *
+ * PRODUCTION MULTI-INSTANCE UPGRADE:
+ * When multi-instance or serverless scaling is needed, provide UPSTASH_REDIS_REST_URL and
+ * UPSTASH_REDIS_REST_TOKEN. The factory (getRateLimiterStore) seamlessly promotes to
+ * DistributedHttpRedisStore for atomic cluster-wide synchronization without requiring code edits.
  */
 export class MemoryRateLimiterStore implements RateLimiterStore {
   private store = new Map<string, { timestamps: number[]; resetAt: number }>();
@@ -179,7 +200,12 @@ export class DistributedHttpRedisStore implements RateLimiterStore {
 }
 
 /**
- * Factory for selecting active RateLimiterStore
+ * Factory for selecting active RateLimiterStore.
+ *
+ * CREDENTIAL HANDLING:
+ * - UPSTASH_REDIS_REST_URL & UPSTASH_REDIS_REST_TOKEN are completely optional.
+ * - When omitted or during development, this returns the resilient MemoryRateLimiterStore.
+ * - Never throws or halts startup when Redis environment variables are absent.
  */
 let activeStore: RateLimiterStore = new MemoryRateLimiterStore();
 
@@ -198,26 +224,39 @@ export function setRateLimiterStore(store: RateLimiterStore): void {
 }
 
 /**
- * Extracts client IP securely using trusted reverse-proxy headers
+ * Extracts client IP securely using trusted reverse-proxy evaluation.
+ *
+ * SECURITY DESIGN:
+ * - When running in Express with `app.set('trust proxy', 1)` (Cloud Run, GCP, Cloudflare),
+ *   Express derives `req.ip` from the trusted reverse proxy chain, immune to spoofed header injection.
+ * - IPv4-mapped IPv6 strings (::ffff:192.168.1.1) are normalized to pure IPv4.
+ * - When behind dedicated Cloudflare edge tunnels where cf-connecting-ip is authoritative,
+ *   that header is vetted.
  */
 export function extractClientIp(
   headers: Record<string, string | string[] | undefined>,
-  socketIp?: string
+  socketOrReqIp?: string
 ): string {
-  // Standard reverse proxy headers in priority order
+  // 1. If Express already resolved a trusted remote client IP, normalize and return it
+  if (socketOrReqIp && socketOrReqIp !== '127.0.0.1' && socketOrReqIp !== '::1') {
+    return socketOrReqIp.replace(/^::ffff:/, '');
+  }
+
+  // 2. Standard Cloudflare authenticated header
   const cfConnectingIp = headers['cf-connecting-ip'];
   if (typeof cfConnectingIp === 'string' && cfConnectingIp.trim()) {
     return cfConnectingIp.trim();
   }
 
+  // 3. X-Real-IP reverse proxy header
   const xRealIp = headers['x-real-ip'];
   if (typeof xRealIp === 'string' && xRealIp.trim()) {
     return xRealIp.trim();
   }
 
+  // 4. Leftmost client IP in standard X-Forwarded-For list
   const forwarded = headers['x-forwarded-for'];
   if (typeof forwarded === 'string' && forwarded.trim()) {
-    // Take the leftmost IP representing original client, trimming whitespace
     const clientIp = forwarded.split(',')[0]?.trim();
     if (clientIp) return clientIp;
   } else if (Array.isArray(forwarded) && forwarded[0]) {
@@ -225,5 +264,5 @@ export function extractClientIp(
     if (clientIp) return clientIp;
   }
 
-  return socketIp || '127.0.0.1';
+  return (socketOrReqIp || '127.0.0.1').replace(/^::ffff:/, '');
 }

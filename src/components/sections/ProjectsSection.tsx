@@ -330,7 +330,7 @@ export const ProjectsSection: React.FC = () => {
   const showReposSection = activeCategory === 'GitHub Repositories';
 
   return (
-    <section id="projects" className="py-24 relative overflow-hidden">
+    <section id="projects" aria-label="Featured Projects and Codebases" className="py-24 relative overflow-hidden">
       {/* Background radial accent */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-r from-blue-600/10 via-cyan-500/10 to-violet-600/10 blur-[120px] pointer-events-none -z-10" />
 

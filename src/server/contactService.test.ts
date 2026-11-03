@@ -140,7 +140,7 @@ test('unconfigured provider returns truthful 503 error without faking message de
     assert.equal(res.status, 503);
     assert.equal(res.configured, false);
     // Explicitly confirms honesty: does NOT pretend message was sent
-    assert.match(res.error || '', /RESEND_API_KEY|lalitchoudhary0907@gmail.com/);
+    assert.match(res.error || '', /provider API credentials|lalitchoudhary0907@gmail.com/);
 
     const status = getPublicServiceStatus();
     assert.equal(status.configured, false);

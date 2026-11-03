@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070b14"/>
+      <stop offset="50%" stop-color="#0a1020"/>
+      <stop offset="100%" stop-color="#060911"/>
+    </linearGradient>
+
+    <!-- Ambient Glow Top Right -->
+    <radialGradient id="glowCyan" cx="85%" cy="15%" r="45%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ambient Glow Bottom Left -->
+    <radialGradient id="glowBlue" cx="15%" cy="85%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Headline Text Gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <!-- Badge Background Gradient -->
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle Developer Grid Pattern -->
+  <g opacity="0.06" stroke="#ffffff" stroke-width="1">
+    <line x1="80" y1="0" x2="80" y2="630"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="320" y1="0" x2="320" y2="630"/>
+    <line x1="440" y1="0" x2="440" y2="630"/>
+    <line x1="560" y1="0" x2="560" y2="630"/>
+    <line x1="680" y1="0" x2="680" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="920" y1="0" x2="920" y2="630"/>
+    <line x1="1040" y1="0" x2="1040" y2="630"/>
+    <line x1="0" y1="70" x2="1200" y2="70"/>
+    <line x1="0" y1="170" x2="1200" y2="170"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="370" x2="1200" y2="370"/>
+    <line x1="0" y1="470" x2="1200" y2="470"/>
+    <line x1="0" y1="570" x2="1200" y2="570"/>
+  </g>
+
+  <!-- Ambient Glow Spots -->
+  <rect width="1200" height="630" fill="url(#glowCyan)"/>
+  <rect width="1200" height="630" fill="url(#glowBlue)"/>
+
+  <!-- Outer Card Frame Border -->
+  <rect x="30" y="30" width="1140" height="570" rx="24" fill="none" stroke="#334155" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Top Status Bar / Category Pill -->
+  <g transform="translate(80, 80)">
+    <!-- LC Monogram Icon -->
+    <rect x="0" y="0" width="56" height="56" rx="16" fill="#0f172a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
+    <text x="28" y="36" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="800" text-anchor="middle" fill="#22d3ee">LC</text>
+
+    <!-- Role Kicker Tag -->
+    <rect x="74" y="10" width="280" height="36" rx="18" fill="#082f49" stroke="#0284c7" stroke-width="1" stroke-opacity="0.5"/>
+    <circle cx="92" cy="28" r="5" fill="#10b981"/>
+    <text x="106" y="33" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#38bdf8" letter-spacing="0.5">SOFTWARE ENGINEER PORTFOLIO</text>
+  </g>
+
+  <!-- Main Identity & Name Headline -->
+  <text x="80" y="240" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Plus Jakarta Sans', sans-serif" font-size="68" font-weight="900" fill="#ffffff" letter-spacing="-1.5">
+    Hi, I&apos;m <tspan fill="url(#textGrad)">Lalit Choudhary</tspan>
+  </text>
+
+  <!-- Subtitle: Role and University -->
+  <text x="80" y="300" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="28" font-weight="600" fill="#e2e8f0" letter-spacing="-0.5">
+    Computer Science &amp; AI Student <tspan fill="#38bdf8">|</tspan> Aspiring Software Engineer
+  </text>
+  <text x="80" y="340" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="500" fill="#94a3b8">
+    Newton School of Technology &#183; Rishihood University
+  </text>
+
+  <!-- Real Focus Areas & Verified Milestones Pill Bar -->
+  <g transform="translate(80, 400)">
+    <!-- Pill 1: WorldQuant Challenge Gold -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="250" height="42" rx="12" fill="#1e1b4b" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.5"/>
+      <text x="16" y="26" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#fbbf24">&#9733; WorldQuant Gold Level</text>
+    </g>
+
+    <!-- Pill 2: DocDrift Automated Code Sync -->
+    <g transform="translate(266, 0)">
+      <rect x="0" y="0" width="200" height="42" rx="12" fill="#0f172a" stroke="#06b6d4" stroke-width="1" stroke-opacity="0.4"/>
+      <text x="16" y="26" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#38bdf8">&lt;/&gt; DocDrift Engine</text>
+    </g>
+
+    <!-- Pill 3: CoreAlert Emergency System -->
+    <g transform="translate(482, 0)">
+      <rect x="0" y="0" width="210" height="42" rx="12" fill="#0f172a" stroke="#3b82f6" stroke-width="1" stroke-opacity="0.4"/>
+      <text x="16" y="26" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#60a5fa">&#9889; CoreAlert SOS Telemetry</text>
+    </g>
+
+    <!-- Pill 4: Python & TypeScript -->
+    <g transform="translate(708, 0)">
+      <rect x="0" y="0" width="210" height="42" rx="12" fill="#0f172a" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.4"/>
+      <text x="16" y="26" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600" fill="#c084fc">Python &amp; TypeScript</text>
+    </g>
+  </g>
+
+  <!-- Bottom Details & Verification Footnote -->
+  <g transform="translate(80, 530)">
+    <line x1="0" y1="0" x2="1040" y2="0" stroke="#334155" stroke-width="1" stroke-opacity="0.4"/>
+    <text x="0" y="32" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="500" fill="#64748b">
+      github.com/lalitchoudhary0907 &#183; lalitchoudhary0907@gmail.com
+    </text>
+    <text x="1040" y="32" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600" fill="#38bdf8" text-anchor="end">
+      Verified Developer Portfolio
+    </text>
+  </g>
+</svg>

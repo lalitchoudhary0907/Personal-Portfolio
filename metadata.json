@@ -1,7 +1,6 @@
 {
   "name": "Lalit Choudhary Portfolio",
-  "description": "Production-oriented personal portfolio for Lalit Choudhary, BTech Computer Science & AI student at Newton School of Technology, Rishihood University.",
+  "description": "Portfolio of Lalit Choudhary — B.Tech Computer Science & AI student at Newton School of Technology (Rishihood University). Exploring software systems, AI tooling, and quantitative modeling.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
-

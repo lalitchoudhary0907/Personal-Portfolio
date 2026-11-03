@@ -124,7 +124,7 @@ export const GitHubActivitySection: React.FC<{ id?: string }> = ({ id = 'github'
   }, [data?.repos]);
 
   return (
-    <section id={id} className="py-24 relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
+    <section id={id} aria-label="GitHub Activity and Open Source Codebases" className="py-24 relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
       {/* Subtle ambient gradient backdrop */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-r from-cyan-600/10 via-blue-600/10 to-indigo-600/10 blur-[130px] pointer-events-none -z-10" />
 
@@ -203,9 +203,12 @@ export const GitHubActivitySection: React.FC<{ id?: string }> = ({ id = 'github'
                 <div className="relative">
                   <img
                     src={data.profile.avatar_url}
-                    alt={data.profile.name || data.profile.login}
+                    alt={`Official GitHub profile picture of ${data.profile.name || data.profile.login} (@${data.profile.login})`}
+                    width="64"
+                    height="64"
                     className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-cyan-500/40 object-cover bg-slate-800"
                     loading="lazy"
+                    decoding="async"
                   />
                   <span className="absolute -bottom-1 -right-1 p-1 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
                 </div>

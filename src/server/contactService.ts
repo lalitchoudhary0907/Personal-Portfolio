@@ -122,7 +122,7 @@ export async function processContactSubmission(
       status: 503,
       configured: false,
       error:
-        'The email delivery service has not been configured with a provider API key (RESEND_API_KEY). To prevent your message from being lost, please email Lalit directly at lalitchoudhary0907@gmail.com or connect on LinkedIn.',
+        'The email delivery service has not been configured with provider API credentials. To prevent your message from being lost, please email Lalit directly at lalitchoudhary0907@gmail.com or connect on LinkedIn.',
     };
   }
 

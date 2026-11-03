@@ -444,9 +444,8 @@ export const ContactSection: React.FC<{ id?: string }> = ({ id = 'contact' }) =>
                     <div className="flex-1">
                       <strong className="font-semibold block mb-0.5">Configuration Notice:</strong>
                       <span>
-                        The backend email service is currently in unconfigured standby mode (no{' '}
-                        <code className="font-mono bg-amber-500/10 px-1 py-0.5 rounded">RESEND_API_KEY</code> set).
-                        You may validate input through the form, or click{' '}
+                        The backend email service is currently in unconfigured standby mode (provider
+                        credentials not set). You may validate input through the form, or click{' '}
                         <a
                           href={getMailtoUrl()}
                           className="font-bold underline text-amber-900 dark:text-amber-200 hover:text-cyan-300"

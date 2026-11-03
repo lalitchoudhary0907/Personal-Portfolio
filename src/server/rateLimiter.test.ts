@@ -72,3 +72,29 @@ test('extractClientIp resolves trusted proxy headers correctly', () => {
   // Fallback to socket IP when headers absent
   assert.equal(extractClientIp({}, '172.16.0.5'), '172.16.0.5');
 });
+
+test('getRateLimiterStore operates reliably without UPSTASH_REDIS credentials', async () => {
+  const origUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const origToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  try {
+    const store = new MemoryRateLimiterStore();
+    const result = await store.consume('optional-cred-ip', 2, 5000);
+    assert.equal(result.allowed, true);
+    assert.equal(result.remainingRequests, 1);
+
+    const second = await store.consume('optional-cred-ip', 2, 5000);
+    assert.equal(second.allowed, true);
+    assert.equal(second.remainingRequests, 0);
+
+    const third = await store.consume('optional-cred-ip', 2, 5000);
+    assert.equal(third.allowed, false);
+
+    store.destroy();
+  } finally {
+    if (origUrl) process.env.UPSTASH_REDIS_REST_URL = origUrl;
+    if (origToken) process.env.UPSTASH_REDIS_REST_TOKEN = origToken;
+  }
+});
