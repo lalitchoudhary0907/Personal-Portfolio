@@ -318,8 +318,7 @@ export const ProjectsSection: React.FC = () => {
   });
 
   const showFeaturedSection = activeCategory !== 'GitHub Repositories';
-  const showReposSection =
-    activeCategory === 'All' || activeCategory === 'GitHub Repositories';
+  const showReposSection = activeCategory === 'GitHub Repositories';
 
   return (
     <section id="projects" className="py-24 relative overflow-hidden">

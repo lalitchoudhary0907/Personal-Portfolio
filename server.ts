@@ -9,7 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { processContactSubmission, getPublicServiceStatus } from './src/server/contactService';
 import { extractClientIp } from './src/server/rateLimiter';
-import { fetchCachedGitHubRepos } from './src/server/githubService';
+import { fetchCachedGitHubRepos, fetchCachedGitHubActivity } from './src/server/githubService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +60,16 @@ async function startServer() {
   app.get('/api/github/repos', async (req: Request, res: Response) => {
     try {
       const { status, body } = await fetchCachedGitHubRepos();
+      res.status(status).json(body);
+    } catch {
+      res.status(502).json({ error: 'GitHub upstream unavailable' });
+    }
+  });
+
+  // 4. GitHub Activity Proxy (Profile, Repos, Events, Languages)
+  app.get('/api/github/activity', async (req: Request, res: Response) => {
+    try {
+      const { status, body } = await fetchCachedGitHubActivity();
       res.status(status).json(body);
     } catch {
       res.status(502).json({ error: 'GitHub upstream unavailable' });

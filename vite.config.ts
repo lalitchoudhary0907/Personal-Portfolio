@@ -6,7 +6,7 @@ import {defineConfig} from 'vite';
 import { processContactSubmission, getPublicServiceStatus } from './src/server/contactService';
 
 import { extractClientIp } from './src/server/rateLimiter';
-import { fetchCachedGitHubRepos } from './src/server/githubService';
+import { fetchCachedGitHubRepos, fetchCachedGitHubActivity } from './src/server/githubService';
 
 function contactApiPlugin() {
   return {
@@ -93,6 +93,13 @@ function githubReposPlugin() {
     configureServer(server: any) {
       server.middlewares.use('/api/github/repos', async (req: any, res: any) => {
         const { status, body } = await fetchCachedGitHubRepos();
+        res.statusCode = status;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(body));
+      });
+
+      server.middlewares.use('/api/github/activity', async (req: any, res: any) => {
+        const { status, body } = await fetchCachedGitHubActivity();
         res.statusCode = status;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(body));

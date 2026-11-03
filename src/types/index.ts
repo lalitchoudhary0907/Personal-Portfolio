@@ -72,9 +72,42 @@ export interface GitHubRepoItem {
   forks_count: number;
   language: string | null;
   updated_at: string;
+  pushed_at?: string;
   topics?: string[];
   is_fork: boolean;
   visibility?: string;
+}
+
+export interface GitHubUserProfile {
+  login: string;
+  name: string | null;
+  avatar_url: string;
+  html_url: string;
+  bio: string | null;
+  public_repos: number;
+  followers: number;
+  following: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GitHubEventItem {
+  id: string;
+  type: string;
+  repo_name: string;
+  repo_url: string;
+  created_at: string;
+  action_summary: string;
+  ref_type?: string;
+  ref_name?: string;
+  commit_count?: number;
+}
+
+export interface GitHubLanguageStat {
+  language: string;
+  count: number;
+  percentage: number;
+  color: string;
 }
 
 export interface GitHubApiResponse {
@@ -82,6 +115,18 @@ export interface GitHubApiResponse {
   fetchedAt: string;
   source: 'server_cache' | 'github_live' | 'fallback_snapshot';
   rateLimitRemaining?: number;
+  error?: string;
+}
+
+export interface GitHubActivityApiResponse {
+  profile: GitHubUserProfile;
+  repos: GitHubRepoItem[];
+  events: GitHubEventItem[];
+  languages: GitHubLanguageStat[];
+  fetchedAt: string;
+  source: 'server_cache' | 'github_live' | 'fallback_snapshot';
+  rateLimitRemaining: number;
+  rateLimitReset?: number;
   error?: string;
 }
 

@@ -26,6 +26,7 @@ export const siteConfig: SiteConfig = {
     { title: 'About', href: '#about' },
     { title: 'Skills', href: '#skills' },
     { title: 'Projects', href: '#projects' },
+    { title: 'GitHub', href: '#github' },
     { title: 'Achievements', href: '#achievements' },
     { title: 'Contact', href: '#contact' },
   ],
