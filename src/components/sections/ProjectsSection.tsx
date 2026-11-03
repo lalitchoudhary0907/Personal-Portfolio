@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import {
   Code2,
   ExternalLink,
@@ -48,12 +48,13 @@ const TiltProjectCard: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   const springConfig = { damping: 20, stiffness: 180 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [7, -7]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-7, 7]), springConfig);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), springConfig);
 
   const [glarePos, setGlarePos] = useState<{ x: number; y: number; opacity: number }>({
     x: 0,
@@ -62,7 +63,7 @@ const TiltProjectCard: React.FC<{
   });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || prefersReducedMotion) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -94,24 +95,32 @@ const TiltProjectCard: React.FC<{
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: 'preserve-3d',
-      }}
+      whileHover={prefersReducedMotion ? {} : { y: -4, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+      whileTap={{ scale: 0.99 }}
+      style={
+        prefersReducedMotion
+          ? undefined
+          : {
+              rotateX,
+              rotateY,
+              transformStyle: 'preserve-3d',
+            }
+      }
       className={cn(
         'relative rounded-2xl transition-shadow duration-300 transform-gpu',
         className
       )}
     >
-      {/* Specular ambient glare following cursor */}
-      <div
-        className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300 z-10"
-        style={{
-          opacity: glarePos.opacity,
-          background: `radial-gradient(400px circle at ${glarePos.x}px ${glarePos.y}px, rgba(56, 189, 248, 0.12), transparent 80%)`,
-        }}
-      />
+      {/* Specular ambient glare following cursor (disabled under reduced motion) */}
+      {!prefersReducedMotion && (
+        <div
+          className="pointer-events-none absolute -inset-px rounded-2xl transition-opacity duration-300 z-10"
+          style={{
+            opacity: glarePos.opacity,
+            background: `radial-gradient(400px circle at ${glarePos.x}px ${glarePos.y}px, rgba(56, 189, 248, 0.12), transparent 80%)`,
+          }}
+        />
+      )}
       {children}
     </motion.div>
   );
@@ -327,7 +336,13 @@ export const ProjectsSection: React.FC = () => {
 
       <Container>
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800/40 text-cyan-300 text-xs font-mono mb-4">
             <Code2 className="w-3.5 h-3.5" />
             <span>ENGINEERING PORTFOLIO</span>
@@ -352,7 +367,7 @@ export const ProjectsSection: React.FC = () => {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={cn(
-                    'relative px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer',
+                    'relative px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer touch-manipulation active:scale-95',
                     isActive
                       ? 'text-white shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -370,18 +385,26 @@ export const ProjectsSection: React.FC = () => {
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Featured Projects Grid */}
         {showFeaturedSection && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch mb-16">
-            {filteredProjects.map((project: ProjectEntry) => {
+            {filteredProjects.map((project: ProjectEntry, idx: number) => {
               const isDocDrift = project.id === 'proj-docdrift';
               const isCoreAlert = project.id === 'proj-corealert';
               const isVastraGo = project.id === 'proj-vastrago';
 
               return (
-                <TiltProjectCard key={project.id} className="flex">
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex"
+                >
+                  <TiltProjectCard className="flex w-full">
                   <Card
                     variant="glass"
                     className="flex flex-col justify-between w-full h-full border border-slate-200 dark:border-white/[0.08] hover:border-cyan-500/40 bg-white/70 dark:bg-[#0c1424]/90 transition-all duration-300"
@@ -520,8 +543,9 @@ export const ProjectsSection: React.FC = () => {
                     </div>
                   </Card>
                 </TiltProjectCard>
-              );
-            })}
+              </motion.div>
+            );
+          })}
           </div>
         )}
 

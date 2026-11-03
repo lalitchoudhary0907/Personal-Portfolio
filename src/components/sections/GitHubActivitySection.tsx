@@ -130,7 +130,13 @@ export const GitHubActivitySection: React.FC<{ id?: string }> = ({ id = 'github'
 
       <Container>
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800/40 text-cyan-300 text-xs font-mono mb-4">
             <Activity className="w-3.5 h-3.5 text-cyan-400" />
             <span>LIVE OPEN SOURCE ACTIVITY</span>
@@ -167,7 +173,7 @@ export const GitHubActivitySection: React.FC<{ id?: string }> = ({ id = 'github'
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as ActivityTab)}
                   className={cn(
-                    'relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer',
+                    'relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer touch-manipulation active:scale-95',
                     isActive
                       ? 'text-white shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -186,7 +192,7 @@ export const GitHubActivitySection: React.FC<{ id?: string }> = ({ id = 'github'
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Profile Card Banner */}
         {data && (

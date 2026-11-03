@@ -177,11 +177,11 @@ export const AboutSection: React.FC = () => {
 
             {/* Interest & Pillar Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <Card variant="glass" className="p-5 space-y-2 hover:border-cyan-500/40 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/40 flex items-center justify-center">
+              <Card variant="interactive" className="p-5 space-y-2 group">
+                <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/40 flex items-center justify-center group-hover:scale-105 transition-transform motion-reduce:transform-none">
                   <Code2 className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                   Software Engineering
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -189,11 +189,11 @@ export const AboutSection: React.FC = () => {
                 </p>
               </Card>
 
-              <Card variant="glass" className="p-5 space-y-2 hover:border-blue-500/40 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 flex items-center justify-center">
+              <Card variant="interactive" className="p-5 space-y-2 group">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 flex items-center justify-center group-hover:scale-105 transition-transform motion-reduce:transform-none">
                   <Cpu className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                   Applied AI &amp; Developer Tools
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -201,11 +201,11 @@ export const AboutSection: React.FC = () => {
                 </p>
               </Card>
 
-              <Card variant="glass" className="p-5 space-y-2 hover:border-violet-500/40 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800/40 flex items-center justify-center">
+              <Card variant="interactive" className="p-5 space-y-2 group">
+                <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800/40 flex items-center justify-center group-hover:scale-105 transition-transform motion-reduce:transform-none">
                   <Terminal className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                   Open-Source &amp; Git
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -213,11 +213,11 @@ export const AboutSection: React.FC = () => {
                 </p>
               </Card>
 
-              <Card variant="glass" className="p-5 space-y-2 hover:border-cyan-500/40 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-center">
+              <Card variant="interactive" className="p-5 space-y-2 group">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-center group-hover:scale-105 transition-transform motion-reduce:transform-none">
                   <Compass className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                   Long-Term Career Direction
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">

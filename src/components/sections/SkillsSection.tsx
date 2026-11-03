@@ -73,13 +73,20 @@ export const SkillsSection: React.FC = () => {
                   aria-controls={`${baseId}-panel-${category}`}
                   onClick={() => setSelectedCategory(category)}
                   className={cn(
-                    'px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400',
+                    'relative px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 active:scale-95',
                     isSelected
-                      ? 'bg-white dark:bg-cyan-500/20 text-slate-900 dark:text-cyan-300 font-semibold shadow-xs border border-slate-200/80 dark:border-cyan-400/40'
+                      ? 'text-slate-900 dark:text-cyan-300 font-semibold'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.04]'
                   )}
                 >
-                  {category}
+                  {isSelected && (
+                    <motion.div
+                      layoutId="activeSkillCategoryPill"
+                      className="absolute inset-0 bg-white dark:bg-cyan-500/20 rounded-lg border border-slate-200/90 dark:border-cyan-400/40 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{category}</span>
                 </button>
               );
             })}
@@ -115,7 +122,7 @@ export const SkillsSection: React.FC = () => {
                   <div className="space-y-3">
                     {/* Top Row: Official-looking icon + Category Tag */}
                     <div className="flex items-center justify-between gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center p-2 group-hover:border-cyan-500/40 transition-colors">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center p-2 group-hover:scale-105 group-hover:border-cyan-500/50 transition-all duration-200 motion-reduce:group-hover:scale-100">
                         <TechIcon name={skill.iconName} className="w-5 h-5" />
                       </div>
 

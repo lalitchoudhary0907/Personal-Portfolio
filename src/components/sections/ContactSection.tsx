@@ -230,7 +230,13 @@ export const ContactSection: React.FC<{ id?: string }> = ({ id = 'contact' }) =>
 
       <Container>
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 sm:mb-20"
+        >
           <Kicker className="mb-3">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             <span>Get In Touch</span>
@@ -244,12 +250,18 @@ export const ContactSection: React.FC<{ id?: string }> = ({ id = 'contact' }) =>
             Whether you are discussing software engineering internships, exploring AI collaborations,
             or discussing open-source projects, my inbox is always open.
           </p>
-        </div>
+        </motion.div>
 
         {/* Two-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
           {/* Left Column: Direct Contact & Info Cards (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-5 flex flex-col gap-6"
+          >
             {/* Primary Email Card */}
             <Card className="border-cyan-500/20 dark:border-cyan-500/20 relative overflow-hidden bg-white dark:bg-[#0c1220]/80">
               <div
@@ -381,10 +393,16 @@ export const ContactSection: React.FC<{ id?: string }> = ({ id = 'contact' }) =>
                 <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
               </a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Contact Form (7 cols) */}
-          <div className="lg:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7"
+          >
             <Card className="border-slate-300 dark:border-white/[0.1] bg-white dark:bg-[#0c1220]/95 backdrop-blur-md shadow-xl relative overflow-hidden">
               <CardHeader className="border-b border-slate-200 dark:border-white/[0.06] pb-5">
                 <div className="flex items-center justify-between">
@@ -754,7 +772,7 @@ export const ContactSection: React.FC<{ id?: string }> = ({ id = 'contact' }) =>
                 )}
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         </div>
       </Container>
     </section>

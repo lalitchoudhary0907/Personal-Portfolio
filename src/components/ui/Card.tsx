@@ -24,24 +24,24 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     ref
   ) => {
     const baseStyles =
-      'rounded-2xl transition-all duration-200 relative overflow-hidden';
+      'rounded-2xl transition-all duration-300 ease-out relative overflow-hidden transform-gpu';
 
     const variantStyles = {
       default:
         'bg-white dark:bg-[#0c1424]/90 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-white/[0.08] shadow-sm',
       glass:
-        'glass-panel text-slate-900 dark:text-slate-100 shadow-md',
+        'glass-panel text-slate-900 dark:text-slate-100 shadow-md hover:border-cyan-500/30 transition-all duration-300',
       interactive:
-        'glass-panel text-slate-900 dark:text-slate-100 hover:border-cyan-500/40 hover:bg-slate-50 dark:hover:bg-[#121c32]/80 hover:shadow-lg dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.35)] hover:-translate-y-0.5 cursor-pointer',
+        'glass-panel text-slate-900 dark:text-slate-100 hover:border-cyan-500/50 hover:bg-slate-50 dark:hover:bg-[#121c32]/85 hover:shadow-xl dark:hover:shadow-[0_12px_36px_rgba(0,0,0,0.45)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.99] cursor-pointer touch-manipulation motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100',
       elevated:
-        'glass-panel-elevated text-slate-900 dark:text-slate-100 shadow-xl',
+        'glass-panel-elevated text-slate-900 dark:text-slate-100 shadow-xl hover:shadow-2xl transition-shadow duration-300',
     }[variant];
 
     const glowStyles = {
       none: '',
-      cyan: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent',
-      blue: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-blue-500 before:to-transparent',
-      violet: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-violet-500 before:to-transparent',
+      cyan: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent before:transition-opacity before:duration-300',
+      blue: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-blue-500 before:to-transparent before:transition-opacity before:duration-300',
+      violet: 'before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-violet-500 before:to-transparent before:transition-opacity before:duration-300',
     }[glowingEdge];
 
     return (

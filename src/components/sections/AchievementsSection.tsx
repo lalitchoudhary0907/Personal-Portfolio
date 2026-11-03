@@ -328,7 +328,13 @@ export const AchievementsSection: React.FC = () => {
 
       <Container>
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-mono mb-4">
             <Trophy className="w-3.5 h-3.5" />
             <span>HONORS &amp; CERTIFICATIONS</span>
@@ -353,7 +359,7 @@ export const AchievementsSection: React.FC = () => {
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
                   className={cn(
-                    'relative px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer',
+                    'relative px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 select-none cursor-pointer touch-manipulation active:scale-95',
                     isActive
                       ? 'text-white shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -371,11 +377,11 @@ export const AchievementsSection: React.FC = () => {
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Certificate Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-          {filteredAchievements.map((item) => {
+          {filteredAchievements.map((item, idx) => {
             const isGold = item.level?.includes('Gold');
 
             return (
@@ -383,8 +389,9 @@ export const AchievementsSection: React.FC = () => {
                 key={item.id}
                 layout
                 initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.35, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 className="flex"
               >
                 <Card

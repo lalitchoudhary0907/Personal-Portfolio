@@ -31,7 +31,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b14] disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap shrink-0 cursor-pointer select-none active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100';
+      'group relative overflow-hidden inline-flex items-center justify-center font-medium transition-all duration-200 ease-out rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070b14] disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap shrink-0 cursor-pointer select-none touch-manipulation hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100';
 
     const variantStyles = {
       primary:
@@ -54,7 +54,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const glowStyle =
       glow && variant === 'primary'
-        ? 'shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'
+        ? 'shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_28px_rgba(6,182,212,0.55)]'
         : '';
 
     return (
@@ -64,9 +64,25 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(baseStyles, variantStyles, sizeStyles, glowStyle, className)}
         {...props}
       >
-        {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}
-        <span>{children}</span>
-        {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
+        {/* Subtle diagonal sheen highlight on hover for primary/glass buttons */}
+        {(variant === 'primary' || variant === 'glass') && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/15 to-transparent motion-reduce:hidden"
+          />
+        )}
+
+        {icon && iconPosition === 'left' && (
+          <span className="shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transform-none">
+            {icon}
+          </span>
+        )}
+        <span className="relative z-10">{children}</span>
+        {icon && iconPosition === 'right' && (
+          <span className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none">
+            {icon}
+          </span>
+        )}
       </button>
     );
   }

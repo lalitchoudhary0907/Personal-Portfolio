@@ -160,7 +160,7 @@ export const HeroSection: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Lalit Choudhary GitHub Profile"
-                  className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-cyan-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-cyan-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 motion-reduce:transform-none"
                 >
                   <Github className="w-4 h-4" />
                 </a>
@@ -170,7 +170,7 @@ export const HeroSection: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Lalit Choudhary LinkedIn Profile"
-                  className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-cyan-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-cyan-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 motion-reduce:transform-none"
                 >
                   <Linkedin className="w-4 h-4" />
                 </a>
@@ -194,12 +194,13 @@ export const HeroSection: React.FC = () => {
             {/* Floating Developer Terminal / Spec Card */}
             <motion.div
               animate={prefersReducedMotion ? {} : { y: [-4, 5, -4] }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1.015, y: -2, transition: { duration: 0.25 } }}
               transition={{
                 duration: 6,
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}
-              className="relative rounded-2xl border border-slate-200/90 dark:border-white/[0.12] bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+              className="relative rounded-2xl border border-slate-200/90 dark:border-white/[0.12] bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-2xl shadow-2xl p-5 sm:p-6 space-y-4 transition-shadow hover:shadow-cyan-500/10"
             >
               {/* Terminal Window Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-white/[0.08]">

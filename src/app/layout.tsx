@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { AmbientBackdrop } from '../components/ui/AmbientBackdrop';
+import { AmbientCursorLight } from '../components/ui/AmbientCursorLight';
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -46,6 +47,9 @@ export const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     <div className="relative min-h-screen flex flex-col bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors selection:bg-cyan-500/20 selection:text-cyan-800 dark:selection:text-cyan-200">
       {/* Soft Ambient Lighting Backdrop */}
       <AmbientBackdrop />
+
+      {/* Desktop-only subtle cursor following glow */}
+      <AmbientCursorLight />
 
       {/* Main Content Tree with padding for floating Navbar */}
       <div className="relative z-10 flex-1 flex flex-col">
