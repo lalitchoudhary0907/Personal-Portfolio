@@ -114,9 +114,9 @@ export const Projects: React.FC = () => {
                       />
                     </div>
 
-                    {project.isConcept && (
+                    {(project.statusLabel || project.isConcept) && (
                       <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-[var(--oxblood)] border border-[var(--oxblood)]/30 px-2 py-0.5 rounded-none">
-                        Concept
+                        {project.statusLabel || 'Under Progress'}
                       </span>
                     )}
                   </div>
@@ -197,7 +197,7 @@ export const Projects: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     data-cursor="project"
-                    aria-label={`${project.name}${project.isConcept ? ' (Concept)' : ''}`}
+                    aria-label={`${project.name}${project.statusLabel ? ` (${project.statusLabel})` : project.isConcept ? ' (Under Progress)' : ''}`}
                     className="block outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)] focus-visible:ring-offset-4"
                   >
                     {rowContent}
@@ -206,7 +206,7 @@ export const Projects: React.FC = () => {
                   <div
                     role="article"
                     data-cursor="project"
-                    aria-label={`${project.name}${project.isConcept ? ' (Concept)' : ''}`}
+                    aria-label={`${project.name}${project.statusLabel ? ` (${project.statusLabel})` : project.isConcept ? ' (Under Progress)' : ''}`}
                     className="block cursor-default"
                   >
                     {rowContent}

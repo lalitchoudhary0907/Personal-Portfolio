@@ -142,7 +142,26 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
     >
       {/* Top Section / Display Name */}
       <div className="w-full flex flex-col mt-auto mb-auto">
-        {/* Line 1: "LALIT" with SerifAccent italic on "A" in oxblood */}
+        {/* Cyber System Status Badge */}
+        <div className="overflow-hidden mb-4 sm:mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#0E131E]/90 border border-white/10 backdrop-blur-md"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-radar-pulse" />
+            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#00F2FE] font-bold">
+              SYSTEM ONLINE // CSAI DEVELOPER
+            </span>
+            <span className="text-white/20 hidden sm:inline">|</span>
+            <span className="font-mono text-[10px] text-[#8E9BAE] hidden sm:inline uppercase">
+              NEWTON SCHOOL OF TECHNOLOGY
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Line 1: "LALIT" with SerifAccent italic on "A" in electric cyan */}
         <div className="overflow-hidden">
           <motion.h1
             initial={{ y: prefersReduced ? 0 : '108%' }}
@@ -204,6 +223,30 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
             >
               {profile.tagline}
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-4 flex flex-wrap items-center gap-3 pt-2"
+            >
+              <a
+                href="#projects"
+                data-cursor="link"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#00F2FE]/15 hover:bg-[#00F2FE]/25 border border-[#00F2FE]/50 text-[#00F2FE] font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(0,242,254,0.15)]"
+              >
+                <span>Selected Works</span>
+                <span aria-hidden="true">&darr;</span>
+              </a>
+              <a
+                href="#contact"
+                data-cursor="link"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-[#F0F6FC] font-mono text-xs uppercase tracking-wider transition-all"
+              >
+                <span>Contact Terminal</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </motion.div>
           </div>
 
           {/* Education Label */}

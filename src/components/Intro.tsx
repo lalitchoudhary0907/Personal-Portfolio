@@ -4,81 +4,58 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
-import { useMagnetic } from '../hooks/useMagnetic';
+import { motion, AnimatePresence } from 'motion/react';
 import { IntroVariant } from '../hooks/useIntro';
 
 interface IntroProps {
   isSplitting: boolean;
+  phase: number;
+  progress: number;
   variant: IntroVariant;
   onSkip: () => void;
 }
 
-const EASE_FOLIO: [number, number, number, number] = [0.76, 0, 0.24, 1];
+const EASE_WARP: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
-// Static SVG Noise Data URI (opacity 0.06, zero animation)
-const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`;
-
-const MARQUEE_TEXT = 'LALIT CHOUDHARY ✦ COMPUTER SCIENCE & AI ✦ LALIT CHOUDHARY ✦ COMPUTER SCIENCE & AI ✦ LALIT CHOUDHARY ✦ COMPUTER SCIENCE & AI ✦ ';
-
-export const Intro: React.FC<IntroProps> = ({ isSplitting, variant, onSkip }) => {
-  // Desktop-only interactive magnetic monogram shift
-  const [isFinePointer, setIsFinePointer] = useState(false);
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const springX = useSpring(rawX, { stiffness: 220, damping: 28 });
-  const springY = useSpring(rawY, { stiffness: 220, damping: 28 });
-
-  // Magnetic effect for Skip button
-  const skipMagnetic = useMagnetic<HTMLButtonElement>({
-    radius: 80,
-    pullFactor: 0.25,
-    maxOffset: 8,
-  });
+export const Intro: React.FC<IntroProps> = ({
+  isSplitting,
+  phase,
+  progress,
+  variant,
+  onSkip,
+}) => {
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   useEffect(() => {
-    const mq = window.matchMedia('(pointer: fine)');
-    setIsFinePointer(mq.matches);
+    const startTime = performance.now();
+    const interval = setInterval(() => {
+      const sec = ((performance.now() - startTime) / 1000).toFixed(1);
+      setSecondsElapsed(Number(sec));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
 
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!mq.matches || isSplitting) return;
-      // Shift up to 12px toward pointer
-      const nx = ((e.clientX - window.innerWidth / 2) / (window.innerWidth / 2)) * 12;
-      const ny = ((e.clientY - window.innerHeight / 2) / (window.innerHeight / 2)) * 12;
-      rawX.set(nx);
-      rawY.set(ny);
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    return () => window.removeEventListener('pointermove', handlePointerMove);
-  }, [isSplitting, rawX, rawY]);
-
-  // Reduced motion: simple crossfade in 400ms without sliding or splitting
   if (variant === 'reduced') {
     return (
       <motion.aside
-        aria-label="Cover Intro"
+        aria-label="Developer Introduction"
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
-        transition={{ duration: 0.4, ease: 'easeInOut' }}
-        className="fixed inset-0 z-[9999] bg-[var(--oxblood)] flex flex-col items-center justify-center text-[var(--paper)] pointer-events-none select-none"
+        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        className="fixed inset-0 z-[9999] bg-[#08090D] flex flex-col items-center justify-center text-[#F0F6FC] select-none"
       >
-        <div className="font-display font-bold text-7xl tracking-tight">LC</div>
-        <div className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--paper)]/80 mt-3">
-          PORTFOLIO &mdash; 2026
+        <div className="font-display font-black text-6xl tracking-tight text-[#00F2FE]">LC</div>
+        <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#8E9BAE] mt-3">
+          LALIT CHOUDHARY ✦ CSAI DEVELOPER
         </div>
       </motion.aside>
     );
   }
 
-  const isQuick = variant === 'quick';
-
   return (
     <aside
-      aria-label="Cover Intro"
-      onClick={onSkip}
-      className="fixed inset-0 z-[9999] overflow-hidden select-none cursor-pointer"
+      aria-label="Developer System Boot Sequence"
+      className="fixed inset-0 z-[9999] overflow-hidden select-none bg-[#08090D] text-[#F0F6FC]"
     >
       {/* ==================================================================== */}
       {/* Top Split Half Curtain (-100% on split) */}
@@ -86,34 +63,11 @@ export const Intro: React.FC<IntroProps> = ({ isSplitting, variant, onSkip }) =>
       <motion.div
         initial={{ y: '0%' }}
         animate={isSplitting ? { y: '-100%' } : { y: '0%' }}
-        transition={{ duration: 0.8, ease: EASE_FOLIO }}
-        className="absolute top-0 left-0 right-0 h-1/2 bg-[var(--oxblood)] overflow-hidden z-10"
+        transition={{ duration: 0.8, ease: EASE_WARP }}
+        className="absolute top-0 left-0 right-0 h-1/2 bg-[#08090D] overflow-hidden z-10 border-b border-[#00F2FE]/30 shadow-[0_4px_30px_rgba(0,242,254,0.15)]"
       >
-        {/* Static Grain Layer (0.06 opacity, static, GPU-friendly) */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none opacity-[0.06]"
-          style={{ backgroundImage: NOISE_BG }}
-        />
-
-        {/* Top Marquee Strip (slides in from left) */}
-        <motion.div
-          initial={{ x: isQuick ? '0%' : '-100%', opacity: 0 }}
-          animate={{ x: '0%', opacity: 1 }}
-          transition={{
-            duration: isQuick ? 0.3 : 0.8,
-            delay: isQuick ? 0.1 : 1.1,
-            ease: EASE_FOLIO,
-          }}
-          className="absolute bottom-6 left-0 right-0 h-8 border-y border-[var(--paper)]/30 bg-[var(--oxblood)] flex items-center overflow-hidden whitespace-nowrap"
-        >
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--paper)]/90 flex-shrink-0 animate-marquee">
-            {MARQUEE_TEXT}
-          </div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--paper)]/90 flex-shrink-0 animate-marquee" aria-hidden="true">
-            {MARQUEE_TEXT}
-          </div>
-        </motion.div>
+        {/* Subtle cyan cyber glow orb */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#00F2FE]/10 rounded-full blur-[140px]" />
       </motion.div>
 
       {/* ==================================================================== */}
@@ -122,135 +76,256 @@ export const Intro: React.FC<IntroProps> = ({ isSplitting, variant, onSkip }) =>
       <motion.div
         initial={{ y: '0%' }}
         animate={isSplitting ? { y: '100%' } : { y: '0%' }}
-        transition={{ duration: 0.8, ease: EASE_FOLIO }}
-        className="absolute bottom-0 left-0 right-0 h-1/2 bg-[var(--oxblood)] overflow-hidden z-10"
+        transition={{ duration: 0.8, ease: EASE_WARP }}
+        className="absolute bottom-0 left-0 right-0 h-1/2 bg-[#08090D] overflow-hidden z-10 border-t border-[#8B5CF6]/30 shadow-[0_-4px_30px_rgba(139,92,246,0.15)]"
       >
-        {/* Static Grain Layer (0.06 opacity) */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none opacity-[0.06]"
-          style={{ backgroundImage: NOISE_BG }}
-        />
-
-        {/* Bottom Marquee Strip (slides in from right) */}
-        <motion.div
-          initial={{ x: isQuick ? '0%' : '100%', opacity: 0 }}
-          animate={{ x: '0%', opacity: 1 }}
-          transition={{
-            duration: isQuick ? 0.3 : 0.8,
-            delay: isQuick ? 0.1 : 1.1,
-            ease: EASE_FOLIO,
-          }}
-          className="absolute top-6 left-0 right-0 h-8 border-y border-[var(--paper)]/30 bg-[var(--oxblood)] flex items-center overflow-hidden whitespace-nowrap"
-        >
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--paper)]/90 flex-shrink-0 animate-marquee-reverse">
-            {MARQUEE_TEXT}
-          </div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--paper)]/90 flex-shrink-0 animate-marquee-reverse" aria-hidden="true">
-            {MARQUEE_TEXT}
-          </div>
-        </motion.div>
+        {/* Subtle violet cyber glow orb */}
+        <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#8B5CF6]/12 rounded-full blur-[140px]" />
       </motion.div>
 
       {/* ==================================================================== */}
-      {/* Center 1px Paper Hairline (scaleX 0 -> 1 over 600ms) */}
+      {/* Interactive Main HUD & Cinematic Sequence */}
       {/* ==================================================================== */}
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={isSplitting ? { opacity: 0 } : { scaleX: 1 }}
-        transition={{
-          duration: isQuick ? 0.3 : 0.6,
-          ease: EASE_FOLIO,
-        }}
-        className="absolute top-1/2 left-0 right-0 h-[1px] bg-[var(--paper)]/40 origin-left z-20 pointer-events-none -translate-y-1/2"
-      />
-
-      {/* ==================================================================== */}
-      {/* Center Monogram: "L" and "C" with masked rise + pointer spring */}
-      {/* ==================================================================== */}
-      <motion.div
-        aria-hidden="true"
-        style={{
-          x: isFinePointer ? springX : 0,
-          y: isFinePointer ? springY : 0,
-        }}
-        animate={
-          isSplitting
-            ? { scale: 0.8, opacity: 0 }
-            : { scale: 1, opacity: 1 }
-        }
-        transition={{ duration: 0.4, ease: EASE_FOLIO }}
-        className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none"
+      <div
+        className={`relative z-20 w-full h-full flex flex-col justify-between p-6 sm:p-10 transition-opacity duration-300 ${
+          isSplitting ? 'opacity-0' : 'opacity-100'
+        }`}
       >
-        <div className="flex items-center text-[clamp(6rem,24vw,17rem)] font-display font-extrabold leading-none tracking-[-0.05em] text-[var(--paper)]">
-          {/* Letter L with overflow-hidden mask */}
-          <div className="overflow-hidden inline-flex">
-            <motion.span
-              initial={{ y: '110%' }}
-              animate={{ y: '0%' }}
-              transition={{
-                duration: isQuick ? 0.35 : 0.75,
-                delay: isQuick ? 0.05 : 0.3,
-                ease: EASE_FOLIO,
-              }}
-              className="inline-block"
-            >
-              L
-            </motion.span>
+        {/* Top Header HUD */}
+        <div className="w-full flex items-center justify-between font-mono text-xs text-[#8E9BAE] border-b border-white/10 pb-4">
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-radar-pulse" />
+            <span className="tracking-widest uppercase text-[#F0F6FC]">
+              SYS_INIT // LALIT.CSAI
+            </span>
           </div>
 
-          {/* Letter C with overflow-hidden mask (80ms stagger) */}
-          <div className="overflow-hidden inline-flex">
-            <motion.span
-              initial={{ y: '110%' }}
-              animate={{ y: '0%' }}
-              transition={{
-                duration: isQuick ? 0.35 : 0.75,
-                delay: isQuick ? 0.12 : 0.38,
-                ease: EASE_FOLIO,
-              }}
-              className="inline-block"
-            >
-              C
-            </motion.span>
+          <div className="hidden sm:flex items-center gap-4 text-[11px] text-[#8E9BAE]">
+            <span>NEWTON SCHOOL OF TECHNOLOGY</span>
+            <span>✦</span>
+            <span className="text-[#00F2FE]">T+{secondsElapsed.toFixed(1)}s / 6.2s</span>
           </div>
+
+          {/* Accessible Skip Button */}
+          <button
+            type="button"
+            onClick={onSkip}
+            aria-label="Skip introduction animation and enter portfolio"
+            className="group min-h-[40px] px-3.5 py-1.5 border border-[#00F2FE]/40 hover:border-[#00F2FE] bg-[#00F2FE]/10 hover:bg-[#00F2FE]/20 text-[#00F2FE] flex items-center gap-2 tracking-wider uppercase text-xs transition-all cursor-pointer"
+          >
+            <span>Skip Intro</span>
+            <span className="text-[10px] text-[#8E9BAE] group-hover:text-[#F0F6FC]">(ESC)</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
         </div>
 
-        {/* Caption: "PORTFOLIO — 2026" */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: isQuick ? 0.3 : 0.6,
-            delay: isQuick ? 0.2 : 0.6,
-            ease: EASE_FOLIO,
-          }}
-          className="font-mono text-xs sm:text-sm uppercase tracking-[0.2em] text-[var(--paper)]/85 mt-2 sm:mt-4"
-        >
-          PORTFOLIO &mdash; 2026
-        </motion.div>
-      </motion.div>
+        {/* Center Content: Dynamic Multi-Phase Cinematic Transitions */}
+        <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full text-center relative py-8">
+          <AnimatePresence mode="wait">
+            {/* Phase 1: Cyber Kernel Boot (0.0s - 1.8s) */}
+            {phase === 1 && (
+              <motion.div
+                key="phase-1"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="w-full max-w-lg space-y-6"
+              >
+                <div className="font-mono text-xs uppercase tracking-[0.25em] text-[#00F2FE] flex items-center justify-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-[#00F2FE] animate-ping" />
+                  INITIALIZING ARCHITECTURE
+                </div>
 
-      {/* ==================================================================== */}
-      {/* Skip Button (bottom right, appears at 0.2s, accessible) */}
-      {/* ==================================================================== */}
-      <motion.button
-        ref={skipMagnetic.ref}
-        style={skipMagnetic.style}
-        type="button"
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSkip();
-        }}
-        data-cursor="link"
-        aria-label="Skip introduction"
-        className="fixed bottom-6 right-6 z-40 min-h-[44px] min-w-[44px] inline-flex items-center justify-center font-mono text-xs uppercase tracking-[0.14em] text-[var(--paper)]/90 hover:text-[var(--paper)] px-4 py-2 border border-[var(--paper)]/30 hover:border-[var(--paper)] bg-[var(--oxblood)] transition-colors cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--paper)]"
-      >
-        Skip &rarr;
-      </motion.button>
+                <div className="bg-[#0E131E]/80 border border-white/10 p-5 font-mono text-xs text-left text-[#8E9BAE] space-y-2.5 backdrop-blur-md rounded-none shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                  <div className="flex items-center justify-between text-[#F0F6FC]">
+                    <span>&gt; TARGET: LALIT CHOUDHARY</span>
+                    <span className="text-[#10B981]">OK</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[#8E9BAE]">
+                    <span>&gt; CSAI CORE: NEWTON SCHOOL OF TECH</span>
+                    <span className="text-[#10B981]">LOADED</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[#8E9BAE]">
+                    <span>&gt; QUANT &amp; OPEN SOURCE TELEMETRY</span>
+                    <span className="text-[#00F2FE]">SYNCED</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[#00F2FE]">
+                    <span>&gt; NEURAL MESH &amp; INTERACTIVE FLUID</span>
+                    <span className="animate-pulse">MOUNTING...</span>
+                  </div>
+                </div>
+
+                {/* Cyber Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between font-mono text-xs text-[#8E9BAE]">
+                    <span>SYSTEM COMPILATION</span>
+                    <span className="text-[#00F2FE] font-bold">{progress}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/10 overflow-hidden relative">
+                    <motion.div
+                      style={{ width: `${progress}%` }}
+                      className="h-full bg-gradient-to-r from-[#00F2FE] via-[#8B5CF6] to-[#00F2FE] transition-all duration-75 shadow-[0_0_12px_#00F2FE]"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Phase 2: Kinetic Monogram & Hologram Reveal (1.8s - 3.8s) */}
+            {phase === 2 && (
+              <motion.div
+                key="phase-2"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.5, ease: EASE_WARP }}
+                className="flex flex-col items-center justify-center space-y-4"
+              >
+                {/* Glowing Monogram */}
+                <div className="relative">
+                  <span className="font-display font-extrabold text-[clamp(6rem,22vw,14rem)] leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-[#F0F6FC] via-[#00F2FE] to-[#8B5CF6] drop-shadow-[0_0_40px_rgba(0,242,254,0.35)] select-none">
+                    LC
+                  </span>
+                  <div className="absolute -inset-4 bg-[#00F2FE]/10 blur-3xl -z-10 rounded-full pointer-events-none" />
+                </div>
+
+                {/* Name & Academic Title */}
+                <div className="space-y-2">
+                  <h1 className="font-display font-extrabold text-2xl sm:text-4xl tracking-tight text-[#F0F6FC] uppercase">
+                    Lalit Choudhary
+                  </h1>
+                  <p className="font-mono text-xs sm:text-sm uppercase tracking-[0.2em] text-[#00F2FE]">
+                    Computer Science &amp; Artificial Intelligence
+                  </p>
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-[#8E9BAE]">
+                    Newton School of Technology ✦ Rishihood University
+                  </p>
+                </div>
+
+                {/* Audio-visual Equalizer Wave Bars */}
+                <div className="flex items-end gap-1.5 h-8 pt-4">
+                  {[24, 40, 16, 48, 32, 56, 28, 44, 20, 52, 36, 60, 24, 48, 32].map((h, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        height: [8, h, 12, h * 0.8, 8],
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        delay: i * 0.07,
+                        ease: 'easeInOut',
+                      }}
+                      className="w-1 bg-gradient-to-t from-[#8B5CF6] to-[#00F2FE] rounded-full"
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Phase 3: Telemetry Verification & Node Lock (3.8s - 5.4s) */}
+            {phase >= 3 && (
+              <motion.div
+                key="phase-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                transition={{ duration: 0.4 }}
+                className="w-full max-w-2xl space-y-6"
+              >
+                <div className="font-mono text-xs uppercase tracking-[0.25em] text-[#10B981] flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 bg-[#10B981] rounded-full animate-ping" />
+                  TELEMETRY NODES SYNCHRONIZED
+                </div>
+
+                {/* 4 Tech Nodes Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left font-mono">
+                  <motion.div
+                    initial={{ opacity: 0, x: -15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="p-3.5 bg-[#0E131E]/90 border border-[#00F2FE]/40 backdrop-blur-md flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="text-[10px] text-[#8E9BAE] uppercase">Project Node 01</div>
+                      <div className="text-sm font-bold text-[#F0F6FC]">FocusFlow</div>
+                    </div>
+                    <span className="text-[10px] uppercase px-2 py-0.5 border border-[#10B981]/50 text-[#10B981] bg-[#10B981]/10">
+                      Live
+                    </span>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="p-3.5 bg-[#0E131E]/90 border border-white/10 backdrop-blur-md flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="text-[10px] text-[#8E9BAE] uppercase">Project Node 02</div>
+                      <div className="text-sm font-bold text-[#F0F6FC]">VastraGo</div>
+                    </div>
+                    <span className="text-[10px] uppercase px-2 py-0.5 border border-[#8B5CF6]/50 text-[#8B5CF6] bg-[#8B5CF6]/10">
+                      In Progress
+                    </span>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: -15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="p-3.5 bg-[#0E131E]/90 border border-[#00F2FE]/40 backdrop-blur-md flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="text-[10px] text-[#8E9BAE] uppercase">Honor Node 01</div>
+                      <div className="text-sm font-bold text-[#F0F6FC]">WorldQuant BRAIN</div>
+                    </div>
+                    <span className="text-[10px] uppercase px-2 py-0.5 border border-[#00F2FE]/50 text-[#00F2FE] bg-[#00F2FE]/10">
+                      Gold Level
+                    </span>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="p-3.5 bg-[#0E131E]/90 border border-white/10 backdrop-blur-md flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="text-[10px] text-[#8E9BAE] uppercase">Honor Node 02</div>
+                      <div className="text-sm font-bold text-[#F0F6FC]">Hacktoberfest 2026</div>
+                    </div>
+                    <span className="text-[10px] uppercase px-2 py-0.5 border border-[#10B981]/50 text-[#10B981] bg-[#10B981]/10">
+                      Attendee
+                    </span>
+                  </motion.div>
+                </div>
+
+                <div className="font-mono text-xs text-[#00F2FE] tracking-widest uppercase animate-pulse">
+                  &gt;&gt; ENGAGING WARP LANDING SEQUENCE...
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Bottom Status Bar */}
+        <div className="w-full flex items-center justify-between font-mono text-xs text-[#8E9BAE] border-t border-white/10 pt-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[#00F2FE]">✦</span>
+            <span>PORTFOLIO SYSTEM // 2026</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span>PRESS</span>
+            <kbd className="px-2 py-0.5 border border-white/20 bg-white/5 text-[#F0F6FC] text-[10px]">
+              ESC
+            </kbd>
+            <span>TO BYPASS</span>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 };

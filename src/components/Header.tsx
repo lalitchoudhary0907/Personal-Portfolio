@@ -171,6 +171,15 @@ export const Header: React.FC = () => {
                 label={item.label}
               />
             ))}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('replay_intro'))}
+              data-cursor="link"
+              aria-label="Replay 6-second cinematic tech introduction"
+              className="font-mono text-[11px] uppercase tracking-wider text-[#8E9BAE] hover:text-[#00F2FE] px-3 py-1.5 border border-white/10 hover:border-[#00F2FE]/50 bg-white/[0.03] transition-colors cursor-pointer"
+            >
+              Intro ↺
+            </button>
           </nav>
 
           {/* Mobile Menu Button (<768px, min 44px tap target) */}

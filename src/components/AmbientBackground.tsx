@@ -6,15 +6,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
-// Static SVG Noise Data URI (opacity 0.06, zero animation)
-const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`;
+interface Dot {
+  x: number;
+  y: number;
+  baseX: number;
+  baseY: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  color: string;
+  glowColor: string;
+  phase: number;
+  phaseSpeed: number;
+}
+
+interface Ripple {
+  x: number;
+  y: number;
+  radius: number;
+  maxRadius: number;
+  alpha: number;
+}
 
 export const AmbientBackground: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const prefersReduced = usePrefersReducedMotion();
-  const parallaxRef = useRef<HTMLDivElement>(null);
   const [isTabVisible, setIsTabVisible] = useState(true);
 
-  // Monitor visibility to pause calculations when tab is hidden
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsTabVisible(!document.hidden);
@@ -23,135 +41,259 @@ export const AmbientBackground: React.FC = () => {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
-  // Parallax Layer: Scroll (factor ~0.08) and pointer (up to 12px desktop)
   useEffect(() => {
-    if (prefersReduced || !isTabVisible) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    let rafId: number;
-    let scrollY = window.scrollY;
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let currentScroll = 0;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
-    const handleScroll = () => {
-      scrollY = window.scrollY;
+    // Mouse coordinates and interaction
+    const pointer = {
+      x: -1000,
+      y: -1000,
+      radius: 140,
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDesktop) return;
-      const halfW = window.innerWidth / 2;
-      const halfH = window.innerHeight / 2;
-      mouseX = ((e.clientX - halfW) / halfW) * 12;
-      mouseY = ((e.clientY - halfH) / halfH) * 12;
+    const ripples: Ripple[] = [];
+
+    // Dot density scaled to viewport size
+    const dotCount = Math.floor(Math.min(130, Math.max(50, (width * height) / 14000)));
+    const dots: Dot[] = [];
+
+    const colors = [
+      { fill: 'rgba(0, 242, 254, 0.75)', glow: 'rgba(0, 242, 254, 0.4)' }, // Cyan
+      { fill: 'rgba(139, 92, 246, 0.75)', glow: 'rgba(139, 92, 246, 0.4)' }, // Violet
+      { fill: 'rgba(240, 246, 252, 0.65)', glow: 'rgba(240, 246, 252, 0.3)' }, // Soft White
+      { fill: 'rgba(16, 185, 129, 0.7)', glow: 'rgba(16, 185, 129, 0.35)' }, // Emerald
+    ];
+
+    for (let i = 0; i < dotCount; i++) {
+      const palette = colors[Math.floor(Math.random() * colors.length)];
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      dots.push({
+        x,
+        y,
+        baseX: x,
+        baseY: y,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: Math.random() * 1.6 + 1.2,
+        color: palette.fill,
+        glowColor: palette.glow,
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.015 + Math.random() * 0.02,
+      });
+    }
+
+    const handleResize = () => {
+      if (!canvas) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.scale(dpr, dpr);
     };
 
-    const updateLoop = () => {
-      // Smooth interpolation for pointer and scroll
-      currentX += (mouseX - currentX) * 0.05;
-      currentY += (mouseY - currentY) * 0.05;
-      currentScroll += (scrollY * 0.08 - currentScroll) * 0.08;
+    const handlePointerMove = (e: MouseEvent) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    };
 
-      if (parallaxRef.current) {
-        parallaxRef.current.style.transform = `translate3d(${currentX.toFixed(2)}px, ${(-currentScroll + currentY).toFixed(2)}px, 0)`;
+    const handlePointerLeave = () => {
+      pointer.x = -1000;
+      pointer.y = -1000;
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        radius: 0,
+        maxRadius: 180,
+        alpha: 0.7,
+      });
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('mousemove', handlePointerMove, { passive: true });
+    window.addEventListener('mouseleave', handlePointerLeave, { passive: true });
+    window.addEventListener('click', handleClick, { passive: true });
+
+    let lastTime = performance.now();
+
+    const render = (time: number) => {
+      if (!isTabVisible) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
       }
 
-      rafId = requestAnimationFrame(updateLoop);
+      ctx.clearRect(0, 0, width, height);
+
+      // Render ripples
+      for (let r = ripples.length - 1; r >= 0; r--) {
+        const rip = ripples[r];
+        rip.radius += 3.5;
+        rip.alpha *= 0.94;
+
+        ctx.beginPath();
+        ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 242, 254, ${rip.alpha * 0.4})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        if (rip.alpha < 0.02 || rip.radius > rip.maxRadius) {
+          ripples.splice(r, 1);
+        }
+      }
+
+      // Update and draw dots
+      for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+
+        if (!prefersReduced) {
+          // Fluid harmonic drift
+          dot.phase += dot.phaseSpeed;
+          dot.x += dot.vx + Math.cos(dot.phase) * 0.25;
+          dot.y += dot.vy + Math.sin(dot.phase) * 0.25;
+
+          // Wrap around canvas boundaries fluidly
+          if (dot.x < -20) dot.x = width + 20;
+          if (dot.x > width + 20) dot.x = -20;
+          if (dot.y < -20) dot.y = height + 20;
+          if (dot.y > height + 20) dot.y = -20;
+
+          // Pointer fluid repulsion & elastic spring
+          const dx = pointer.x - dot.x;
+          const dy = pointer.y - dot.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < pointer.radius && dist > 0) {
+            const force = (pointer.radius - dist) / pointer.radius;
+            const angle = Math.atan2(dy, dx);
+            dot.x -= Math.cos(angle) * force * 3.5;
+            dot.y -= Math.sin(angle) * force * 3.5;
+          }
+
+          // Ripples push dots
+          for (const rip of ripples) {
+            const rdx = dot.x - rip.x;
+            const rdy = dot.y - rip.y;
+            const rdist = Math.sqrt(rdx * rdx + rdy * rdy);
+            if (Math.abs(rdist - rip.radius) < 25) {
+              const push = (25 - Math.abs(rdist - rip.radius)) * 0.08 * rip.alpha;
+              const rAngle = Math.atan2(rdy, rdx);
+              dot.x += Math.cos(rAngle) * push;
+              dot.y += Math.sin(rAngle) * push;
+            }
+          }
+        }
+
+        // Draw Dot with subtle glow
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        ctx.fillStyle = dot.color;
+        ctx.shadowColor = dot.glowColor;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+      }
+
+      // Draw dynamic connecting filaments between close dots
+      const maxConnDist = 110;
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dx = dots[i].x - dots[j].x;
+          const dy = dots[i].y - dots[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxConnDist) {
+            const alpha = (1 - dist / maxConnDist) * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
+            ctx.lineWidth = 0.75;
+            ctx.stroke();
+          }
+        }
+
+        // Connect nearby dots to pointer if close
+        if (pointer.x > 0) {
+          const pdx = dots[i].x - pointer.x;
+          const pdy = dots[i].y - pointer.y;
+          const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
+          if (pdist < pointer.radius) {
+            const pAlpha = (1 - pdist / pointer.radius) * 0.35;
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(pointer.x, pointer.y);
+            ctx.strokeStyle = `rgba(0, 242, 254, ${pAlpha})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      if (!prefersReduced) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    if (isDesktop) {
-      window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    }
-    rafId = requestAnimationFrame(updateLoop);
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (isDesktop) {
-        window.removeEventListener('mousemove', handleMouseMove);
-      }
-      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('mouseleave', handlePointerLeave);
+      window.removeEventListener('click', handleClick);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [prefersReduced, isTabVisible]);
+  }, [isTabVisible, prefersReduced]);
 
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none"
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none bg-[#08090D]"
     >
-      {/* 1. Static Grain Overlay (0.06 opacity, static, non-animated) */}
+      {/* 1. Subtle Cyber Grid Hairlines */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.06]"
-        style={{ backgroundImage: NOISE_BG }}
+        className="absolute inset-0 opacity-[0.035]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '48px 48px',
+        }}
       />
 
-      {/* 2. Layer 1: Very Slow Geometric Drift & Rotation (90s linear loop) */}
-      <div
-        className={`absolute inset-0 ${
-          prefersReduced || !isTabVisible ? '' : 'animate-ambient-spin'
-        }`}
-        style={{ willChange: prefersReduced || !isTabVisible ? 'auto' : 'transform' }}
-      >
-        {/* Shape 1: Outlined circle (top-right) */}
-        <svg
-          className="absolute top-[8%] right-[10%] w-72 h-72 opacity-[0.14]"
-          viewBox="0 0 288 288"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="144" cy="144" r="143" stroke="#6B1522" strokeWidth="1" />
-        </svg>
+      {/* 2. Floating Fluid Chromatic Glow Orbs */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Electric Cyan Fluid Orb (Top Left -> Center) */}
+        <div className="absolute -top-[15%] -left-[10%] w-[58vw] h-[58vw] rounded-full bg-gradient-to-br from-[#00F2FE]/15 via-[#00c6ff]/10 to-transparent blur-[130px] animate-fluid-orb-1" />
 
-        {/* Shape 2: Quarter circle arc (middle-left) */}
-        <svg
-          className="absolute top-[38%] -left-12 w-64 h-64 opacity-[0.14]"
-          viewBox="0 0 256 256"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M 0 0 A 240 240 0 0 1 240 240" stroke="#6B1522" strokeWidth="1" />
-        </svg>
+        {/* Neon Violet Fluid Orb (Bottom Right -> Center) */}
+        <div className="absolute -bottom-[20%] -right-[10%] w-[62vw] h-[62vw] rounded-full bg-gradient-to-tl from-[#8B5CF6]/16 via-[#6366F1]/12 to-transparent blur-[140px] animate-fluid-orb-2" />
 
-        {/* Shape 5: Subtle dashed geometric boundary (bottom-right) */}
-        <svg
-          className="absolute bottom-[12%] right-[15%] w-48 h-48 opacity-[0.12]"
-          viewBox="0 0 192 192"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="96" cy="96" r="95" stroke="#6B1522" strokeWidth="1" strokeDasharray="6 6" />
-        </svg>
+        {/* Subtle Emerald Core Glow (Center Accent) */}
+        <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-[#10B981]/08 blur-[160px] animate-pulse" />
       </div>
 
-      {/* 3. Layer 2: Parallax Layer (Scroll depth 0.08 + pointer 12px) */}
-      <div
-        ref={parallaxRef}
-        className="absolute inset-0"
-        style={{ willChange: prefersReduced || !isTabVisible ? 'auto' : 'transform' }}
-      >
-        {/* Shape 3: Geometric plus mark (center right) */}
-        <svg
-          className="absolute top-[48%] right-[22%] w-8 h-8 opacity-[0.18]"
-          viewBox="0 0 32 32"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M 16 0 L 16 32 M 0 16 L 32 16" stroke="#6B1522" strokeWidth="1" />
-        </svg>
-
-        {/* Shape 4: Short diagonal hairline (lower left) */}
-        <svg
-          className="absolute bottom-[28%] left-[12%] w-40 h-24 opacity-[0.14]"
-          viewBox="0 0 160 96"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <line x1="0" y1="96" x2="160" y2="0" stroke="#6B1522" strokeWidth="1" />
-        </svg>
-      </div>
+      {/* 3. High-Performance Interactive Fluid Dot & Filament Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
     </div>
   );
 };

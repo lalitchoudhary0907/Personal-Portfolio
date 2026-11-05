@@ -22,12 +22,8 @@ export const Footer: React.FC = () => {
   });
 
   const handleReplayIntro = () => {
-    try {
-      localStorage.removeItem('lc_intro_seen_v1');
-    } catch {
-      // Storage access safety
-    }
-    window.location.search = '?intro=1';
+    window.dispatchEvent(new CustomEvent('replay_intro'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToTop = (e: React.MouseEvent) => {

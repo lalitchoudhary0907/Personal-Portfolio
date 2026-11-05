@@ -7,6 +7,7 @@ export interface ProjectEntry {
   id: string;
   name: string;
   isConcept?: boolean;
+  statusLabel?: string;
   description: string;
   links: {
     github: string;
@@ -17,36 +18,28 @@ export interface ProjectEntry {
 
 export const projects: ProjectEntry[] = [
   {
-    id: 'docdrift',
-    name: 'DocDrift',
+    id: 'focusflow',
+    name: 'FocusFlow',
     isConcept: false,
-    description: '',
+    description:
+      'A modern, responsive Pomodoro timer web app featuring customizable focus sessions, productivity tracking, smooth animations, and persistent local storage.',
     links: {
-      github: '',
-      live: '',
+      github: 'https://github.com/lalitchoudhary0907/FocusFlow',
+      live: 'https://focus-flow-eta-six.vercel.app',
     },
-    tags: [],
+    tags: ['JavaScript', 'HTML5', 'CSS3', 'Productivity'],
   },
   {
-    id: 'corealert',
-    name: 'CoreAlert',
-    isConcept: false,
-    description: '',
-    links: {
-      github: '',
-      live: '',
-    },
-    tags: [],
-  },
-  {
-    id: 'stitchai',
-    name: 'StitchAI',
+    id: 'vastrago',
+    name: 'VastraGo',
     isConcept: true,
-    description: '',
+    statusLabel: 'under progress',
+    description:
+      'An intelligent fashion and bespoke tailoring platform concept bridging personalized apparel recommendations with local artisanal tailoring.',
     links: {
       github: '',
       live: '',
     },
-    tags: [],
+    tags: ['AI', 'Fashion Tech', 'Marketplace Concept'],
   },
 ];

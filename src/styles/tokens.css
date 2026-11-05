@@ -3,19 +3,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/* FOLIO Design Tokens */
+/* High-Tech Developer Cyber Dark Design Tokens */
 :root {
-  --paper: #F0E9DA;
-  --paper-deep: #E6DDC9;
-  --ink: #1C1512;
-  --ink-muted: #6A5E54;
-  --oxblood: #6B1522;
-  --line: rgba(28, 21, 18, 0.14);
+  /* Dark Tech Canvas & Surfaces */
+  --paper: #08090D;
+  --paper-deep: #0E131E;
+  --paper-card: rgba(14, 19, 30, 0.75);
+  
+  /* High-Contrast Readability */
+  --ink: #F0F6FC;
+  --ink-muted: #8E9BAE;
+  --ink-faint: #525E72;
+  
+  /* Electric Tech Accents */
+  --oxblood: #00F2FE; /* Primary electric cyan accent */
+  --accent-cyan: #00F2FE;
+  --accent-cyan-glow: rgba(0, 242, 254, 0.35);
+  --accent-violet: #8B5CF6;
+  --accent-violet-glow: rgba(139, 92, 246, 0.35);
+  --accent-emerald: #10B981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+  
+  /* Glass Hairlines & Borders */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-bright: rgba(255, 255, 255, 0.16);
+  --line-cyan: rgba(0, 242, 254, 0.3);
 
+  /* Typography */
   --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-mono: 'DM Mono', monospace;
 
+  /* Motion Curves */
   --ease-reveal: cubic-bezier(0.76, 0, 0.24, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -39,9 +58,9 @@
 
 .type-body {
   font-family: var(--font-display);
-  font-size: 1.0625rem; /* ~17px */
-  line-height: 1.55;
-  max-width: 62ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  max-width: 65ch;
   font-variation-settings: 'wght' 400, 'wdth' 100, 'opsz' 16;
 }
 
@@ -49,7 +68,7 @@
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  color: var(--oxblood);
+  color: var(--accent-cyan);
 }
 
 .type-label {
@@ -57,5 +76,5 @@
   font-size: 12px;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
 }

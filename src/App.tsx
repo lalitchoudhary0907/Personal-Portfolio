@@ -25,7 +25,7 @@ export default function App() {
     return typeof window !== 'undefined' && window.location.search.includes('tokens');
   });
 
-  const { isIntroActive, isSplitting, introDone, variant, skipIntro } = useIntro();
+  const { isIntroActive, isSplitting, introDone, phase, progress, variant, skipIntro } = useIntro();
 
   useEffect(() => {
     const handleLocationChange = () => {
@@ -44,6 +44,8 @@ export default function App() {
       {isIntroActive && (
         <Intro
           isSplitting={isSplitting}
+          phase={phase}
+          progress={progress}
           variant={variant}
           onSkip={skipIntro}
         />

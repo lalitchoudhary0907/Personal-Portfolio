@@ -53,6 +53,7 @@ export interface ProjectEntry extends BaseRecord {
   tags: string[];
   repoUrl?: string;
   demoUrl?: string;
+  liveUrl?: string;
   isConcept?: boolean;
   conceptLabel?: string;
   statusBadge?: string;

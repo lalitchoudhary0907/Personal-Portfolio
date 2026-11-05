@@ -26,14 +26,7 @@ export const Achievements: React.FC = () => {
         </Heading>
       </div>
 
-      {/* Organization Header */}
-      <div className="mb-8">
-        <span className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--oxblood)] font-bold">
-          WorldQuant BRAIN
-        </span>
-      </div>
-
-      {/* Ladder of three rows: Bronze, Silver, Gold */}
+      {/* Verified Achievement Records */}
       <div className="border-t border-[var(--line)]">
         {achievements.map((item, index) => (
           <motion.div
@@ -46,58 +39,85 @@ export const Achievements: React.FC = () => {
               ease: [0.76, 0, 0.24, 1],
               delay: prefersReduced ? 0 : index * 0.08,
             }}
-            className="py-8 sm:py-10 border-b border-[var(--line)] flex flex-col md:flex-row md:items-center justify-between gap-6"
+            className="py-10 sm:py-14 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-8"
           >
-            {/* Left: Step index & Tier label */}
-            <div className="flex items-baseline gap-4 sm:gap-8">
-              <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] shrink-0 w-8">
+            {/* Left: Step Index, Title, Issuer, Summary */}
+            <div className="flex items-start gap-4 sm:gap-8 max-w-2xl">
+              <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] shrink-0 w-8 pt-2">
                 0{index + 1}
               </span>
-              <div>
-                <span className="font-display text-[clamp(1.75rem,4vw,2.75rem)] font-bold tracking-tight text-[var(--ink)]">
-                  {item.tier} Milestone
+              <div className="space-y-2">
+                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--oxblood)] font-bold block">
+                  {item.issuer}
                 </span>
-                <span className="block font-mono text-[11px] uppercase tracking-wider text-[var(--ink-muted)] mt-1">
-                  WorldQuant BRAIN
-                </span>
+
+                <h3 className="font-display text-[clamp(1.75rem,3.8vw,2.75rem)] font-bold tracking-tight text-[var(--ink)] leading-[1.05]">
+                  {item.title}
+                </h3>
+
+                <p className="font-mono text-xs text-[var(--ink-muted)] uppercase tracking-wider">
+                  {item.subtitle}
+                </p>
+
+                <p className="text-sm text-[var(--ink)]/80 leading-relaxed pt-1">
+                  {item.summary}
+                </p>
+
+                {item.authority && (
+                  <p className="font-mono text-[11px] text-[var(--ink-muted)] pt-1">
+                    Presented by: {item.authority}
+                  </p>
+                )}
+
+                {item.tags && item.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {item.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-muted)] border border-[var(--line)] px-2 py-0.5"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Right: Certificate Slot & Empty Year Field */}
-            <div className="flex items-center gap-6 pl-12 md:pl-0">
-              {/* Year field (empty slot, rendered without placeholder prose) */}
-              {item.year ? (
-                <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)]">
-                  {item.year}
-                </span>
-              ) : (
-                <span className="font-mono text-xs text-[var(--ink-muted)]" aria-hidden="true" />
-              )}
+            {/* Right: Date & Certificate Media Card */}
+            <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-4 pl-12 lg:pl-0 shrink-0">
+              <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)]">
+                {item.date}
+              </span>
 
-              {/* Certificate image or paper-deep placeholder slot */}
-              {item.image ? (
-                <Reveal variant="image">
-                  <img
-                    src={item.image}
-                    alt={`${item.tier} Milestone Certificate`}
-                    width={192}
-                    height={112}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-40 sm:w-48 h-24 sm:h-28 object-cover border border-[var(--line)] bg-[var(--paper-deep)]"
-                  />
-                </Reveal>
-              ) : (
-                <div
-                  aria-label={`${item.tier} Milestone: Certificate to be added`}
-                  className="w-40 sm:w-48 h-24 sm:h-28 bg-[var(--paper-deep)] border border-[var(--line)] flex flex-col items-center justify-center p-3 text-center"
-                >
-                  <span className="font-display font-black text-xl text-[var(--oxblood)]/25 uppercase tracking-wider">
-                    {item.tier}
-                  </span>
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--ink-muted)] mt-1">
-                    Certificate to be added
-                  </span>
+              {/* Certificate Image Slot with link to full PDF */}
+              {item.image && (
+                <div className="group relative">
+                  <Reveal variant="image">
+                    <img
+                      src={item.image}
+                      alt={`${item.title} Certificate for Lalit Choudhary`}
+                      width={280}
+                      height={160}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-56 sm:w-64 h-32 sm:h-36 object-cover border border-white/10 group-hover:border-[#00F2FE]/60 bg-[#0E131E] transition-colors shadow-[0_0_20px_rgba(0,0,0,0.6)]"
+                    />
+                  </Reveal>
+
+                  {item.pdfUrl && (
+                    <a
+                      href={item.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor="link"
+                      aria-label={`Open official ${item.title} certificate PDF in new tab`}
+                      className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-[var(--oxblood)] hover:underline outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)]"
+                    >
+                      <span>View Full Certificate</span>
+                      <span aria-hidden="true">&nearr;</span>
+                    </a>
+                  )}
                 </div>
               )}
             </div>

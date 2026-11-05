@@ -31,7 +31,6 @@ export const Contact: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2600);
     } catch {
-      // Fallback
       setCopied(true);
       setTimeout(() => setCopied(false), 2600);
     }
@@ -42,23 +41,23 @@ export const Contact: React.FC = () => {
       id="contact"
       data-cursor="on-dark"
       aria-labelledby="contact-heading"
-      className="relative w-full bg-[var(--ink)] text-[var(--paper)] py-[12vh] px-6 sm:px-10 select-none"
+      className="relative w-full bg-[#0B0E17]/95 text-[#F0F6FC] py-[12vh] px-6 sm:px-10 border-t border-white/10 select-none"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header with drawing rule line */}
         <div className="mb-12 sm:mb-16">
           <SectionLabelCounter
             label="05 / CONTACT"
-            lineColor="bg-[var(--paper)]/30"
-            className="mb-4 text-[var(--paper-deep)]/70"
+            lineColor="bg-[#00F2FE]/40"
+            className="mb-4 text-[#8E9BAE]"
           />
-          <Heading id="contact-heading" className="text-[var(--paper)]">
-            Direct <SerifAccent className="text-[var(--paper-deep)]">Dialogue</SerifAccent>
+          <Heading id="contact-heading" className="text-[#F0F6FC]">
+            Direct <SerifAccent className="text-[#00F2FE]">Dialogue</SerifAccent>
           </Heading>
         </div>
 
         {/* Giant Email Link with magnetic interaction and micro-feedback */}
-        <div className="py-8 sm:py-12 border-t border-[var(--paper)]/15">
+        <div className="py-8 sm:py-12 border-t border-white/10">
           <motion.a
             ref={emailMagnetic.ref}
             style={emailMagnetic.style}
@@ -68,7 +67,7 @@ export const Contact: React.FC = () => {
             href={`mailto:${profile.contact.email}`}
             data-cursor="link"
             aria-label={`Send email to ${profile.contact.email}`}
-            className="font-display text-[clamp(1.75rem,5.5vw,4.5rem)] font-bold tracking-tight text-[var(--paper)] hover:text-[var(--paper-deep)] break-all inline-block transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)]"
+            className="font-display text-[clamp(1.75rem,5.5vw,4.5rem)] font-bold tracking-tight text-[#F0F6FC] hover:text-[#00F2FE] break-all inline-block transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#00F2FE]"
           >
             {profile.contact.email}
           </motion.a>
@@ -85,15 +84,15 @@ export const Contact: React.FC = () => {
               onClick={handleCopyEmail}
               data-cursor="link"
               aria-label="Copy email address to clipboard"
-              className="min-h-[44px] inline-flex items-center justify-center font-mono text-xs uppercase tracking-widest px-6 py-3 border border-[var(--paper)]/30 hover:border-[var(--paper)] text-[var(--paper)] hover:bg-[var(--paper)]/10 transition-colors cursor-pointer"
+              className="min-h-[44px] inline-flex items-center justify-center font-mono text-xs uppercase tracking-widest px-6 py-3 border border-[#00F2FE]/40 hover:border-[#00F2FE] text-[#00F2FE] hover:bg-[#00F2FE]/10 transition-colors cursor-pointer"
             >
               {copied ? 'Copied to Clipboard' : 'Copy Email'}
             </motion.button>
 
             {/* Screen reader & visual status announcement */}
-            <div aria-live="polite" className="font-mono text-xs text-[var(--paper-deep)]">
+            <div aria-live="polite" className="font-mono text-xs text-[#8E9BAE]">
               {copied && (
-                <span className="flex items-center gap-1.5 text-[var(--paper)]">
+                <span className="flex items-center gap-1.5 text-[#10B981]">
                   <span>✦</span> Email copied to clipboard
                 </span>
               )}
@@ -102,8 +101,8 @@ export const Contact: React.FC = () => {
         </div>
 
         {/* Social / Profile Links */}
-        <div className="pt-10 border-t border-[var(--paper)]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--paper-deep)]/70">
+        <div className="pt-10 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <span className="font-mono text-xs uppercase tracking-widest text-[#8E9BAE]">
             External Profiles
           </span>
 
@@ -115,7 +114,7 @@ export const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 data-cursor="link"
                 aria-label="GitHub profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--paper)] hover:text-[var(--paper-deep)] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[#F0F6FC] hover:text-[#00F2FE] transition-colors duration-200"
               >
                 <span>GitHub</span>
                 <span
@@ -134,7 +133,7 @@ export const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 data-cursor="link"
                 aria-label="LinkedIn profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--paper)] hover:text-[var(--paper-deep)] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[#F0F6FC] hover:text-[#00F2FE] transition-colors duration-200"
               >
                 <span>LinkedIn</span>
                 <span
