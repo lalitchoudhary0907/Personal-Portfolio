@@ -3,14 +3,87 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { RootLayout } from './app/layout';
-import { HomePage } from './app/page';
+import React, { useState, useEffect } from 'react';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { Hero } from './components/Hero';
+import { AmbientBackground } from './components/AmbientBackground';
+import { StripsBand } from './components/StripsBand';
+import { Projects } from './components/Projects';
+import { About } from './components/About';
+import { Skills } from './components/Skills';
+import { Achievements } from './components/Achievements';
+import { Contact } from './components/Contact';
+import { StyleGuide } from './components/StyleGuide';
+import { Intro } from './components/Intro';
+import { useIntro } from './hooks/useIntro';
+import { Cursor } from './components/Cursor';
+import { CursorProvider } from './context/CursorContext';
 
 export default function App() {
+  const [showTokens, setShowTokens] = useState(() => {
+    return typeof window !== 'undefined' && window.location.search.includes('tokens');
+  });
+
+  const { isIntroActive, isSplitting, introDone, variant, skipIntro } = useIntro();
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setShowTokens(window.location.search.includes('tokens'));
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, []);
+
+  if (showTokens) {
+    return <StyleGuide />;
+  }
+
   return (
-    <RootLayout>
-      <HomePage />
-    </RootLayout>
+    <CursorProvider>
+      {isIntroActive && (
+        <Intro
+          isSplitting={isSplitting}
+          variant={variant}
+          onSkip={skipIntro}
+        />
+      )}
+
+      {/* Custom Cursor appears only after introDone */}
+      <Cursor introDone={introDone} />
+
+      {/* Ambient background with static grain, geometric hairlines and subtle parallax */}
+      <AmbientBackground />
+
+      <div
+        inert={isIntroActive || undefined}
+        className="min-h-screen flex flex-col bg-[var(--paper)] text-[var(--ink)]"
+      >
+        {/* Skip to Content Link */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 min-h-[44px] min-w-[44px] px-5 py-3 inline-flex items-center justify-center bg-[var(--oxblood)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider outline-none"
+        >
+          Skip to content
+        </a>
+
+        {/* Semantic Header Landmark */}
+        <Header />
+
+        {/* Semantic Main Landmark */}
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          <Hero introDone={introDone} />
+          <StripsBand />
+          <Projects />
+          <About />
+          <Skills />
+          <Achievements />
+          <Contact />
+        </main>
+
+        {/* Semantic Footer Landmark */}
+        <Footer />
+      </div>
+    </CursorProvider>
   );
 }

@@ -1,0 +1,61 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* FOLIO Design Tokens */
+:root {
+  --paper: #F0E9DA;
+  --paper-deep: #E6DDC9;
+  --ink: #1C1512;
+  --ink-muted: #6A5E54;
+  --oxblood: #6B1522;
+  --line: rgba(28, 21, 18, 0.14);
+
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --ease-reveal: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Typography Utility Classes */
+.type-display {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 14vw, 13rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variation-settings: 'wght' 750, 'wdth' 95, 'opsz' 96;
+}
+
+.type-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 4.5vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  font-variation-settings: 'wght' 700, 'wdth' 95, 'opsz' 48;
+}
+
+.type-body {
+  font-family: var(--font-display);
+  font-size: 1.0625rem; /* ~17px */
+  line-height: 1.55;
+  max-width: 62ch;
+  font-variation-settings: 'wght' 400, 'wdth' 100, 'opsz' 16;
+}
+
+.type-serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--oxblood);
+}
+
+.type-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}

@@ -17,9 +17,9 @@ export const portfolioData: PortfolioData = {
   personalInfo: {
     fullName: 'Lalit Choudhary',
     role: 'BTech Computer Science & AI Student, Aspiring Software Engineer',
-    headline: 'BTech CS & AI Student passionate about software engineering, intelligent systems, and open-source tooling.',
+    headline: 'BTech CS & AI student focused on software engineering, intelligent systems, and open-source tooling.',
     summary:
-      'Computer Science & Artificial Intelligence undergraduate at Newton School of Technology (Rishihood University). Focused on building reliable software systems, applied machine learning workflows, and developer-centric tooling. Active quantitative researcher with Gold level recognition in the WorldQuant Challenge and enthusiastic open-source contributor.',
+      'Computer Science & Artificial Intelligence undergraduate at Newton School of Technology (Rishihood University). Focused on building reliable software systems, applied machine learning workflows, and developer-centric tooling. Active quantitative researcher with Gold level recognition in the WorldQuant Challenge and open-source contributor.',
     location: 'India',
     email: 'lalitchoudhary0907@gmail.com',
     socials: {
