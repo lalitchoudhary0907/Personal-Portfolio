@@ -47,7 +47,7 @@ export const Achievements: React.FC = () => {
                 0{index + 1}
               </span>
               <div className="space-y-2">
-                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--oxblood)] font-bold block">
+                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--primary)] font-bold block">
                   {item.issuer}
                 </span>
 
@@ -70,14 +70,14 @@ export const Achievements: React.FC = () => {
                 )}
 
                 {item.tags && item.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {item.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-muted)] border border-[var(--line)] px-2 py-0.5"
-                      >
-                        {tag}
-                      </span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-2 font-mono text-[11px] text-[var(--ink-muted)]">
+                    {item.tags.map((tag, tagIdx) => (
+                      <React.Fragment key={tag}>
+                        {tagIdx > 0 && <span aria-hidden="true" className="opacity-40">·</span>}
+                        <span className="uppercase tracking-wider">
+                          {tag}
+                        </span>
+                      </React.Fragment>
                     ))}
                   </div>
                 )}

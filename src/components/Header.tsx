@@ -44,13 +44,13 @@ const MagneticNavLink: React.FC<{
       href={href}
       onClick={handleClick}
       data-cursor="link"
-      className="group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors inline-flex items-center"
+      className="group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--primary)] transition-colors inline-flex items-center"
     >
       <span>{label}</span>
       {/* Underline that draws from left to right on hover */}
       <span
         aria-hidden="true"
-        className="absolute bottom-2 left-2 right-2 h-[1.5px] bg-[var(--oxblood)] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ease-out"
+        className="absolute bottom-2 left-2 right-2 h-[1.5px] bg-[var(--primary)] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ease-out"
       />
     </motion.a>
   );
@@ -177,7 +177,7 @@ export const Header: React.FC = () => {
             }}
             data-cursor="link"
             aria-label="Lalit Choudhary — Top of page"
-            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-start font-display font-extrabold text-2xl tracking-tighter text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors select-none cursor-pointer"
+            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-start font-display font-extrabold text-2xl tracking-tighter text-[var(--ink)] hover:text-[var(--primary)] transition-colors select-none cursor-pointer"
           >
             LC
           </motion.a>
@@ -252,7 +252,7 @@ export const Header: React.FC = () => {
                 onClick={closeMenu}
                 aria-label="Close navigation menu"
                 data-cursor="link"
-                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--oxblood)] border border-[var(--line)] px-4 py-2 transition-colors cursor-pointer"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--primary)] border border-[var(--line)] px-4 py-2 transition-colors cursor-pointer"
               >
                 Close [Esc]
               </button>
@@ -276,10 +276,10 @@ export const Header: React.FC = () => {
                     }
                   }}
                   data-cursor="link"
-                  className="group flex items-baseline justify-between font-display text-[clamp(2.5rem,10vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors border-b border-[var(--line)] pb-3 cursor-pointer"
+                  className="group flex items-baseline justify-between font-display text-[clamp(2.5rem,10vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--primary)] transition-colors border-b border-[var(--line)] pb-3 cursor-pointer"
                 >
                   <span>{item.label}</span>
-                  <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] group-hover:text-[var(--oxblood)] transition-colors">
+                  <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] group-hover:text-[var(--primary)] transition-colors">
                     0{index + 1} &rarr;
                   </span>
                 </a>

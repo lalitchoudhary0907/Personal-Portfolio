@@ -41,7 +41,7 @@ export const Contact: React.FC = () => {
       id="contact"
       data-cursor="on-dark"
       aria-labelledby="contact-heading"
-      className="relative w-full bg-[#0B0E17]/95 text-[#F0F6FC] py-[12vh] px-6 sm:px-10 border-t border-white/10 select-none"
+      className="relative w-full bg-[var(--paper-deep)] text-[var(--ink)] py-[12vh] px-6 sm:px-10 border-t border-[var(--line)] select-none"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header with drawing rule line */}

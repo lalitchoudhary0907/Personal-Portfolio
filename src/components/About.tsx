@@ -4,76 +4,142 @@
  */
 
 import React from 'react';
-import { profile } from '../data/profile';
-import { Heading, SerifAccent, Body } from './Typography';
-import { Reveal, SectionLabelCounter } from './Reveal';
+import { motion } from 'motion/react';
+import { portfolioData } from '../data/portfolio';
+import { Heading, SerifAccent, Kicker } from './Typography';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export const About: React.FC = () => {
+  const prefersReduced = usePrefersReducedMotion();
+  const { personalInfo, education } = portfolioData;
+  const currentEdu = education[0];
+
   return (
     <section
       id="about"
       aria-labelledby="about-heading"
       className="relative w-full py-[12vh] px-6 sm:px-10 max-w-7xl mx-auto border-t border-[var(--line)] select-none"
     >
+      {/* Section Header */}
       <div className="mb-12 sm:mb-16">
-        <SectionLabelCounter label="02 / ABOUT" className="mb-4" />
+        <Kicker index="02" title="ABOUT" meta="BACKGROUND & DISCIPLINE" className="mb-4" />
         <Heading id="about-heading">
-          Background &amp; <SerifAccent>Focus</SerifAccent>
+          Engineering With <SerifAccent>Deliberate Intent</SerifAccent>
         </Heading>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 sm:gap-16 items-start">
-        {/* Left: 2-3 sentences max using only verified facts, rising as a block */}
-        <div className="md:col-span-8 flex flex-col gap-6">
-          <Reveal variant="rise">
-            <Body className="text-[clamp(1.2rem,2.2vw,1.75rem)] leading-[1.5] text-[var(--ink)] font-normal max-w-2xl">
-              {profile.aboutText}
-            </Body>
-          </Reveal>
+      {/* 12-Column Asymmetrical Editorial Spread */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        {/* Left Column (Cols 1-7): Editorial Lead & Philosophy */}
+        <div className="lg:col-span-7 space-y-8">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: prefersReduced ? 0.2 : 0.7, ease: [0.76, 0, 0.24, 1] }}
+            className="font-display text-[clamp(1.2rem,2.1vw,1.65rem)] text-[var(--ink)] font-normal leading-[1.55]"
+          >
+            Pursuing a BTech in Computer Science &amp; Artificial Intelligence at Newton School of Technology (Rishihood University). I bridge the analytical rigor of quantitative modeling with modern software engineering craft.
+          </motion.p>
 
-          <Reveal variant="rise" delay={0.15}>
-            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 font-display text-[13px] uppercase tracking-[0.1em] text-[#bbc7c6]">
-              <div className="flex items-center gap-2">
-                <span className="text-[#cbfffc] font-bold">&#10022;</span>
-                <span className="text-[#edfffe]">Degree: {profile.education.degree}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#cbfffc] font-bold">&#10022;</span>
-                <span className="text-[#edfffe]">Institution: {profile.education.institution}</span>
-              </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: prefersReduced ? 0.2 : 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
+            className="space-y-6 pt-4 border-t border-[var(--line)]"
+          >
+            <div className="space-y-1.5">
+              <span className="font-mono text-xs uppercase tracking-wider text-[var(--secondary)] font-semibold flex items-center gap-2">
+                <span>01</span>
+                <span className="w-3 h-[1px] bg-[var(--line)]" />
+                <span>Algorithmic Rigor</span>
+              </span>
+              <p className="font-display text-sm sm:text-base text-[var(--ink-muted)] leading-relaxed">
+                Applying quantitative discipline to real-world code. Reached Gold Level in the global WorldQuant Challenge® through structured alpha signal creation and mathematical formulation.
+              </p>
             </div>
-          </Reveal>
+
+            <div className="space-y-1.5">
+              <span className="font-mono text-xs uppercase tracking-wider text-[var(--secondary)] font-semibold flex items-center gap-2">
+                <span>02</span>
+                <span className="w-3 h-[1px] bg-[var(--line)]" />
+                <span>System Architecture</span>
+              </span>
+              <p className="font-display text-sm sm:text-base text-[var(--ink-muted)] leading-relaxed">
+                Building reliable web applications and micro-services. Creator of FocusFlow—a focused Pomodoro productivity engine with customizable cycles, client persistence, and clean interaction states.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="font-mono text-xs uppercase tracking-wider text-[var(--secondary)] font-semibold flex items-center gap-2">
+                <span>03</span>
+                <span className="w-3 h-[1px] bg-[var(--line)]" />
+                <span>Open-Source Engagement</span>
+              </span>
+              <p className="font-display text-sm sm:text-base text-[var(--ink-muted)] leading-relaxed">
+                Active in open-source developer communities. Participated in Hacktoberfest Hack Day Sonipat, collaborating with peers on codebase maintenance, git workflows, and developer tools.
+              </p>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Right: Optional Photo Slot with clip-path reveal (16px radius, Kelp surface) */}
-        <div className="md:col-span-4 flex justify-start md:justify-end">
-          {profile.photo ? (
-            <Reveal variant="image">
-              <img
-                src={profile.photo}
-                alt={profile.name}
-                width={320}
-                height={400}
-                loading="lazy"
-                decoding="async"
-                className="w-full max-w-xs aspect-[4/5] object-cover rounded-[16px] border border-white/10 bg-[#003734]"
-              />
-            </Reveal>
-          ) : (
-            <Reveal variant="rise" delay={0.1}>
-              <div
-                aria-hidden="true"
-                className="w-full max-w-xs aspect-[4/5] bg-[#003734] border border-white/10 rounded-[16px] flex flex-col items-center justify-center p-6 text-center"
-              >
-                <span className="font-display font-medium text-5xl text-[#cbfffc]/30 tracking-tight">
-                  LC
-                </span>
-                <span className="font-display text-[11px] uppercase tracking-[0.12em] text-[#edfffe] mt-3">
-                  Auros Portrait Slot
-                </span>
+        {/* Right Column (Cols 8-12): Academic & Location Dossier Card */}
+        <div className="lg:col-span-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: prefersReduced ? 0.2 : 0.75, ease: [0.76, 0, 0.24, 1], delay: 0.15 }}
+            className="p-6 sm:p-8 rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/80 backdrop-blur-xl shadow-xl space-y-6"
+          >
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--secondary)] block mb-1">
+                Academic Credential
+              </span>
+              <h3 className="font-display text-lg sm:text-xl font-bold text-[var(--ink)] leading-snug">
+                {currentEdu.degree}
+              </h3>
+              <p className="font-mono text-xs text-[var(--primary)] mt-1">
+                {currentEdu.fieldOfStudy}
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-[var(--line)] space-y-3 font-mono text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[var(--ink)]">
+                <span className="text-[var(--ink-muted)] uppercase text-[11px]">Institution</span>
+                <span className="font-medium">{currentEdu.institution}</span>
               </div>
-            </Reveal>
-          )}
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[var(--ink)]">
+                <span className="text-[var(--ink-muted)] uppercase text-[11px]">University</span>
+                <span className="font-medium">{currentEdu.university}</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[var(--ink)]">
+                <span className="text-[var(--ink-muted)] uppercase text-[11px]">Location</span>
+                <span className="font-medium">{currentEdu.location}</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[var(--ink)]">
+                <span className="text-[var(--ink-muted)] uppercase text-[11px]">Status</span>
+                <span className="text-[var(--accent)] font-medium">{currentEdu.status}</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[var(--line)]">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-muted)] block mb-2">
+                Verified Engagements
+              </span>
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                <span className="text-[var(--secondary)]">WorldQuant BRAIN</span>
+                <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
+                <span className="text-[var(--secondary)]">Hacktoberfest Sonipat</span>
+                <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
+                <span className="text-[var(--secondary)]">Open-Source Tooling</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

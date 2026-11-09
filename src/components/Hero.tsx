@@ -5,8 +5,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { profile } from '../data/profile';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { Kicker } from './Typography';
 
 interface HeroProps {
   introDone?: boolean;
@@ -36,9 +36,9 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
 
     const letters: LetterState[] = Array.from(letterEls).map((el) => ({
       el,
-      currentWght: 500,
+      currentWght: 600,
       currentWdth: 100,
-      targetWght: 500,
+      targetWght: 600,
       targetWdth: 100,
     }));
 
@@ -71,16 +71,16 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
           const cy = rect.top + rect.height / 2;
           const dist = Math.hypot(mouseX - cx, mouseY - cy);
 
-          if (dist < 300) {
-            const factor = 1 - dist / 300;
-            item.targetWght = 500 + factor * 300; // 500 -> 800
-            item.targetWdth = 100 - factor * 15; // 100 -> 85
+          if (dist < 320) {
+            const factor = 1 - dist / 320;
+            item.targetWght = 600 + factor * 260; // 600 -> 860
+            item.targetWdth = 100 - factor * 14;  // 100 -> 86
           } else {
-            item.targetWght = 500;
+            item.targetWght = 600;
             item.targetWdth = 100;
           }
         } else {
-          item.targetWght = 500;
+          item.targetWght = 600;
           item.targetWdth = 100;
         }
 
@@ -89,8 +89,8 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
         const diffWdth = item.targetWdth - item.currentWdth;
 
         if (Math.abs(diffWght) > 0.4 || Math.abs(diffWdth) > 0.2) {
-          item.currentWght += diffWght * 0.12;
-          item.currentWdth += diffWdth * 0.12;
+          item.currentWght += diffWght * 0.14;
+          item.currentWdth += diffWdth * 0.14;
           item.el.style.fontVariationSettings = `'wght' ${Math.round(
             item.currentWght
           )}, 'wdth' ${item.currentWdth.toFixed(1)}, 'opsz' 96`;
@@ -130,7 +130,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
   const revealTransition = (staggerIndex: number) => ({
     duration: 0.85,
     ease: [0.76, 0, 0.24, 1] as const,
-    delay: prefersReduced ? 0 : staggerIndex * 0.09,
+    delay: prefersReduced ? 0 : staggerIndex * 0.08,
   });
 
   return (
@@ -138,175 +138,253 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
       id="top"
       ref={heroRef}
       aria-label="Introduction"
-      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] pb-[max(2.5rem,calc(2rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
+      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(6rem,calc(5rem+env(safe-area-inset-top)))] pb-[max(2rem,calc(1.75rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
     >
-      {/* Top Section / Display Name */}
-      <div className="w-full flex flex-col mt-auto mb-auto">
-        {/* Cyber System Status Badge */}
-        <div className="overflow-hidden mb-4 sm:mb-6">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#0E131E]/90 border border-white/10 backdrop-blur-md"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-radar-pulse" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--primary)] font-bold">
-              SYSTEM ONLINE // CSAI DEVELOPER
-            </span>
-            <span className="text-white/20 hidden sm:inline">|</span>
-            <span className="font-mono text-[10px] text-[var(--ink-muted)] hidden sm:inline uppercase">
-              NEWTON SCHOOL OF TECHNOLOGY
-            </span>
-          </motion.div>
-        </div>
-
-        {/* Line 1: "LALIT" with SerifAccent italic on "A" in primary brand accent */}
-        <div className="overflow-hidden">
-          <motion.h1
-            initial={{ y: prefersReduced ? 0 : '108%' }}
-            animate={{ y: shouldReveal ? 0 : '108%' }}
-            transition={revealTransition(0)}
-            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(3.5rem,14vw,11rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
-          >
-            <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
-              L
-            </span>
-            <span
-              className="font-serif italic font-normal text-[var(--primary)] inline-block px-1 -mx-0.5"
-              style={{ fontFeatureSettings: '"swsh" 1' }}
-            >
-              A
-            </span>
-            <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
-              L
-            </span>
-            <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
-              I
-            </span>
-            <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
-              T
-            </span>
-          </motion.h1>
-        </div>
-
-        {/* Line 2: "CHOUDHARY" with variable font response */}
-        <div className="overflow-hidden -mt-1 sm:-mt-2">
-          <motion.div
-            initial={{ y: prefersReduced ? 0 : '108%' }}
-            animate={{ y: shouldReveal ? 0 : '108%' }}
-            transition={revealTransition(1)}
-            aria-hidden="true"
-            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(2.4rem,9.8vw,7.6rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
-          >
-            {'CHOUDHARY'.split('').map((char, index) => (
-              <span
-                key={index}
-                data-var-letter="true"
-                className="inline-block transition-[font-variation-settings]"
-              >
-                {char}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Tagline & Education Metadata */}
-        <div className="mt-4 sm:mt-6 pt-4 border-t border-[var(--line)] grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
-          {/* Tagline */}
-          <div className="overflow-hidden md:col-span-7">
-            <motion.p
-              initial={{ y: prefersReduced ? 0 : '108%' }}
-              animate={{ y: shouldReveal ? 0 : '108%' }}
-              transition={revealTransition(2)}
-              className="font-display text-[clamp(1.15rem,2.1vw,1.6rem)] text-[var(--ink)] font-normal leading-[1.35] max-w-xl"
-            >
-              {profile.tagline}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-4 flex flex-wrap items-center gap-3 pt-2"
-            >
-              <a
-                href="#projects"
-                data-cursor="link"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)]/15 hover:bg-[var(--primary)]/25 border border-[var(--primary)]/50 text-[var(--primary)] font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_var(--primary-glow)]"
-              >
-                <span>Selected Works</span>
-                <span aria-hidden="true">&darr;</span>
-              </a>
-              <a
-                href="#contact"
-                data-cursor="link"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-[#F0F6FC] font-mono text-xs uppercase tracking-wider transition-all"
-              >
-                <span>Contact Terminal</span>
-                <span aria-hidden="true">&rarr;</span>
-              </a>
-            </motion.div>
-          </div>
-
-          {/* Education Label */}
-          <div className="overflow-hidden md:col-span-5 md:text-right">
-            <motion.p
-              initial={{ y: prefersReduced ? 0 : '108%' }}
-              animate={{ y: shouldReveal ? 0 : '108%' }}
-              transition={revealTransition(3)}
-              className="font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.14em] text-[var(--ink-muted)] leading-relaxed"
-            >
-              {profile.educationLabel}
-            </motion.p>
-          </div>
+      {/* Top Meta Bar */}
+      <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 pb-4 border-b border-[var(--line)]">
+        <Kicker index="01" title="MONOGRAPH" meta="2026 EDITION" />
+        <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink-muted)] flex items-center gap-2">
+          <span>[28.4° N, 77.0° E]</span>
+          <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
+          <span>Sonipat, India</span>
         </div>
       </div>
 
-      {/* Bottom Row: Micro-loop Scroll Indicator */}
-      <div className="w-full flex items-center justify-between pt-6 border-t border-[var(--line)]/50 mt-6 sm:mt-8">
-        <div className="overflow-hidden">
+      {/* Main 12-Column Asymmetrical Editorial Body */}
+      <div className="my-auto py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        {/* Left Column (Cols 1-7): Primary Typographic Identity & Prose */}
+        <div className="lg:col-span-7 flex flex-col justify-center">
+          {/* Subtle Discipline Kicker */}
+          <div className="overflow-hidden mb-3 sm:mb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 12 }}
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.16em] text-[var(--secondary)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
+              <span>Computer Science &amp; Artificial Intelligence</span>
+              <span className="text-[var(--ink-muted)]/40 hidden sm:inline">·</span>
+              <span className="text-[var(--ink-muted)] hidden sm:inline">Newton School of Technology</span>
+            </motion.div>
+          </div>
+
+          {/* Line 1: "LALIT" with swash serif "A" */}
+          <div className="overflow-hidden">
+            <motion.h1
+              initial={{ y: prefersReduced ? 0 : '108%' }}
+              animate={{ y: shouldReveal ? 0 : '108%' }}
+              transition={revealTransition(0)}
+              className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(3.8rem,13vw,9.5rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
+            >
+              <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
+                L
+              </span>
+              <span
+                className="font-serif italic font-normal text-[var(--primary)] inline-block px-1 -mx-0.5 transition-colors duration-500"
+                style={{ fontFeatureSettings: '"swsh" 1' }}
+              >
+                A
+              </span>
+              <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
+                L
+              </span>
+              <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
+                I
+              </span>
+              <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
+                T
+              </span>
+            </motion.h1>
+          </div>
+
+          {/* Line 2: "CHOUDHARY" with variable font tracking */}
+          <div className="overflow-hidden -mt-1 sm:-mt-2">
+            <motion.div
+              initial={{ y: prefersReduced ? 0 : '108%' }}
+              animate={{ y: shouldReveal ? 0 : '108%' }}
+              transition={revealTransition(1)}
+              aria-hidden="true"
+              className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(2.4rem,8.6vw,6.4rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
+            >
+              {'CHOUDHARY'.split('').map((char, index) => (
+                <span
+                  key={index}
+                  data-var-letter="true"
+                  className="inline-block transition-[font-variation-settings]"
+                >
+                  {char}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Refined Supporting Statement (Accurate, Non-Slogan, Concise) */}
+          <div className="mt-5 sm:mt-6 overflow-hidden max-w-xl">
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
+              transition={revealTransition(2)}
+              className="font-display text-[clamp(1.1rem,1.9vw,1.45rem)] text-[var(--ink)] font-normal leading-[1.45]"
+            >
+              Undergraduate at Newton School of Technology (Rishihood University). Engineering deliberate software systems, algorithmic models, and open-source tooling with architectural clarity.
+            </motion.p>
+          </div>
+
+          {/* Action CTAs */}
           <motion.div
-            initial={{ y: prefersReduced ? 0 : '108%' }}
-            animate={{ y: shouldReveal ? 0 : '108%' }}
-            transition={revealTransition(4)}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 15 }}
+            transition={{ duration: 0.5, delay: 0.28 }}
+            className="mt-7 flex flex-wrap items-center gap-3.5"
           >
             <a
               href="#projects"
-              onClick={(e) => {
-                e.preventDefault();
-                document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
-                window.history.pushState(null, '', '#projects');
-              }}
               data-cursor="link"
-              aria-label="Scroll to work and projects"
-              className="group min-h-[44px] inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--ink-muted)] hover:text-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] py-2 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider font-semibold transition-all hover:opacity-90 active:scale-95 shadow-[0_0_24px_var(--primary-glow)]"
             >
-              <span>Scroll</span>
-              <div
-                className="w-[1px] h-8 bg-[var(--line)] overflow-hidden relative"
-                aria-hidden="true"
-              >
-                <div className="w-full h-full bg-[var(--primary)] animate-scroll-line" />
-              </div>
+              <span>Explore Selected Works</span>
+              <span aria-hidden="true">↓</span>
+            </a>
+
+            <a
+              href="#contact"
+              data-cursor="link"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--paper-deep)] hover:bg-[var(--paper-card)] border border-[var(--border-bright)] hover:border-[var(--primary)] text-[var(--ink)] font-mono text-xs uppercase tracking-wider transition-all"
+            >
+              <span>Initiate Dialogue</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+
+            <a
+              href="#achievements"
+              data-cursor="link"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-[var(--secondary)] hover:text-[var(--accent)] font-mono text-xs transition-colors"
+            >
+              <span className="text-[var(--accent)]" aria-hidden="true">✦</span>
+              <span>WorldQuant Challenge Gold</span>
             </a>
           </motion.div>
         </div>
 
-        <div className="overflow-hidden">
-          <motion.span
-            initial={{ y: prefersReduced ? 0 : '108%' }}
-            animate={{ y: shouldReveal ? 0 : '108%' }}
-            transition={revealTransition(4)}
-            className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+        {/* Right Column (Cols 8-12): Architectural Specification Dossier & WebGL Stage Reserve */}
+        <div className="lg:col-span-5 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: shouldReveal ? 1 : 0, scale: shouldReveal ? 1 : 0.96 }}
+            transition={{ duration: 0.75, delay: 0.2 }}
+            className="relative p-6 sm:p-7 rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/85 backdrop-blur-xl shadow-xl overflow-hidden group"
           >
-            PORTFOLIO &mdash; 2026
-          </motion.span>
+            {/* Ambient Optical Light Gradient within dossier */}
+            <div
+              aria-hidden="true"
+              className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl pointer-events-none transition-colors duration-700"
+              style={{
+                background: `radial-gradient(circle, var(--primary-glow) 0%, transparent 70%)`,
+              }}
+            />
+
+            {/* Dossier Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--line)] mb-5">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--secondary)] font-semibold">
+                  Architectural Profile
+                </span>
+              </div>
+              <span className="font-mono text-[10px] text-[var(--ink-muted)]">
+                BTech CSAI · NST
+              </span>
+            </div>
+
+            {/* Core Disciplines Breakdown */}
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-muted)] block mb-1">
+                  01 · Technical Focus
+                </span>
+                <p className="font-display text-sm text-[var(--ink)] leading-snug">
+                  Applied Artificial Intelligence, Software Engineering &amp; High-Performance Web Applications.
+                </p>
+                <div className="flex flex-wrap items-center gap-x-2 text-[11px] font-mono text-[var(--secondary)] pt-1.5">
+                  <span>Python</span>
+                  <span className="text-[var(--ink-muted)]/40">·</span>
+                  <span>TypeScript</span>
+                  <span className="text-[var(--ink-muted)]/40">·</span>
+                  <span>PyTorch</span>
+                  <span className="text-[var(--ink-muted)]/40">·</span>
+                  <span>FastAPI</span>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[var(--line)]">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-muted)] block mb-1">
+                  02 · Quantitative Research
+                </span>
+                <p className="font-display text-sm text-[var(--ink)] leading-snug">
+                  WorldQuant Challenge® Gold Level researcher developing disciplined mathematical alpha signals.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-[var(--line)]">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-muted)] block mb-1">
+                  03 · Active Engineering
+                </span>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[var(--ink)] font-medium">FocusFlow</span>
+                  <span className="text-[var(--accent)] text-[10px]">Live Production ↗</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-mono pt-1">
+                  <span className="text-[var(--ink)] font-medium">VastraGo</span>
+                  <span className="text-[var(--secondary)] text-[10px]">AI Concept · In Progress</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stage Footer / Spatial Placeholder Notice */}
+            <div className="mt-5 pt-3 border-t border-[var(--line)] flex items-center justify-between text-[10px] font-mono text-[var(--ink-muted)]">
+              <span>Sonipat / Delhi NCR</span>
+              <span className="text-[var(--primary)] font-medium">System Ready</span>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom Row: Micro-loop Scroll Indicator & Colophon */}
+      <div className="w-full flex items-center justify-between pt-4 border-t border-[var(--line)]">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: shouldReveal ? 1 : 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+        >
+          <a
+            href="#projects"
+            onClick={(e) => {
+              e.preventDefault();
+              document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(null, '', '#projects');
+            }}
+            data-cursor="link"
+            aria-label="Scroll to work and projects"
+            className="group min-h-[44px] inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--ink-muted)] hover:text-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] py-2 cursor-pointer"
+          >
+            <span>Scroll To Explore</span>
+            <div
+              className="w-[1px] h-6 bg-[var(--line)] overflow-hidden relative"
+              aria-hidden="true"
+            >
+              <div className="w-full h-full bg-[var(--primary)] animate-scroll-line" />
+            </div>
+            <span className="text-[10px] text-[var(--ink-muted)]/60">[Index 01 — 05]</span>
+          </a>
+        </motion.div>
+
+        <div className="hidden sm:block font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+          Lalit Choudhary · Portfolio 2026
         </div>
       </div>
     </section>
   );
 };
 
-// Also export HeroSection alias for backwards compatibility
 export const HeroSection = Hero;

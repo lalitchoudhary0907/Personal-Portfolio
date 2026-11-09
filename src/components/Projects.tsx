@@ -3,217 +3,176 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
-import { projects } from '../data/projects';
-import { Heading, SerifAccent } from './Typography';
-import { SectionLabelCounter } from './Reveal';
+import React from 'react';
+import { motion } from 'motion/react';
+import { portfolioData } from '../data/portfolio';
+import { Heading, SerifAccent, Kicker } from './Typography';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export const Projects: React.FC = () => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isDesktopFine, setIsDesktopFine] = useState(false);
-  const containerRef = useRef<HTMLElement>(null);
   const prefersReduced = usePrefersReducedMotion();
-
-  // Floating preview coordinates with spring
-  const mouseX = useMotionValue(-1000);
-  const mouseY = useMotionValue(-1000);
-  const springX = useSpring(mouseX, { stiffness: 260, damping: 28 });
-  const springY = useSpring(mouseY, { stiffness: 260, damping: 28 });
-
-  useEffect(() => {
-    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
-    setIsDesktopFine(media.matches);
-
-    const handleMediaChange = (e: MediaQueryListEvent) => {
-      setIsDesktopFine(e.matches);
-    };
-
-    media.addEventListener('change', handleMediaChange);
-    return () => media.removeEventListener('change', handleMediaChange);
-  }, []);
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDesktopFine || prefersReduced) return;
-    mouseX.set(e.clientX + 24);
-    mouseY.set(e.clientY - 60);
-  };
-
-  const activeProject = hoveredIndex !== null ? projects[hoveredIndex] : null;
+  const { projects } = portfolioData;
 
   return (
     <section
       id="projects"
-      ref={containerRef}
       aria-labelledby="projects-heading"
-      onPointerMove={handlePointerMove}
-      className="relative w-full py-[12vh] px-6 sm:px-10 max-w-7xl mx-auto select-none"
+      className="relative w-full py-[12vh] px-6 sm:px-10 max-w-7xl mx-auto border-t border-[var(--line)] select-none"
     >
-      {/* Section Header with drawing rule and fading text */}
-      <div className="mb-12 sm:mb-16">
-        <SectionLabelCounter label="01 / WORK" className="mb-4" />
+      {/* Section Header */}
+      <div className="mb-14 sm:mb-20">
+        <Kicker index="01" title="WORK" meta="ENGINEERED ARTIFACTS & CONCEPTS" className="mb-4" />
         <Heading id="projects-heading">
-          Selected <SerifAccent>Works</SerifAccent>
+          Selected <SerifAccent>Architectures &amp; Works</SerifAccent>
         </Heading>
       </div>
 
-      {/* Floating Preview Slot (Desktop fine pointer only, 16px radius, no shadow) */}
-      {isDesktopFine && !prefersReduced && (
-        <motion.div
-          aria-hidden="true"
-          style={{
-            x: springX,
-            y: springY,
-            opacity: hoveredIndex !== null ? 1 : 0,
-            scale: hoveredIndex !== null ? 1 : 0.85,
-          }}
-          transition={{ duration: 0.2 }}
-          className="pointer-events-none fixed top-0 left-0 z-30 w-56 h-36 bg-[#003734] border border-white/10 rounded-[16px] flex flex-col items-center justify-center overflow-hidden"
-        >
-          {activeProject && (
-            <div className="flex flex-col items-center justify-center p-4 text-center">
-              <span className="font-display font-medium text-5xl text-[#cbfffc]/40 tracking-tight">
-                {activeProject.name.charAt(0)}
-              </span>
-              <span className="font-display text-[11px] uppercase tracking-[0.12em] text-[#edfffe] mt-2">
-                Auros Deep Preview
-              </span>
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Project Rows */}
-      <div className="w-full border-b border-[var(--line)]">
+      {/* Editorial Projects Layout */}
+      <div className="space-y-16 sm:space-y-24">
         {projects.map((project, index) => {
-          const projectUrl = project.links.live || project.links.github;
-          const isDimmed = hoveredIndex !== null && hoveredIndex !== index;
+          const isFocusFlow = project.id === 'proj-focusflow';
+          const isConcept = Boolean(project.isConcept);
 
-          const rowContent = (
-            <div
-              className={`relative py-8 sm:py-12 transition-opacity duration-200 ${
-                isDimmed ? 'opacity-35' : 'opacity-100'
-              }`}
+          return (
+            <motion.article
+              key={project.id}
+              initial={{ opacity: 0, y: prefersReduced ? 0 : 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-10%' }}
+              transition={{
+                duration: prefersReduced ? 0.2 : 0.8,
+                ease: [0.76, 0, 0.24, 1],
+                delay: prefersReduced ? 0 : index * 0.12,
+              }}
+              className="group relative p-8 sm:p-12 rounded-3xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/70 hover:bg-[var(--paper-deep)]/90 transition-all duration-300"
             >
-              <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-8">
-                {/* Left: Index & Name with Drawing Underline on Hover */}
-                <div className="flex items-baseline gap-4 sm:gap-8">
-                  <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] shrink-0 w-8">
-                    0{index + 1}
-                  </span>
-                  <div className="flex flex-wrap items-baseline gap-3">
-                    <div className="relative inline-block">
-                      <span className="font-display text-[clamp(2rem,6vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] leading-[0.95] group-hover:text-[var(--oxblood)] transition-colors duration-200">
-                        {project.name}
-                      </span>
-                      {/* Underline draws on name hover (200ms transition) */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--oxblood)] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left ease-out"
-                      />
-                    </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+                {/* Left Column (Cols 1-8): Index, Title, Description, Engineering Highlights */}
+                <div className="lg:col-span-8 space-y-6">
+                  {/* Top Meta Line: Editorial Number & Status */}
+                  <div className="flex items-center justify-between pb-4 border-b border-[var(--line)]">
+                    <span className="font-mono text-xs uppercase tracking-widest text-[var(--secondary)] font-semibold flex items-center gap-2">
+                      <span className="text-[var(--primary)] font-bold text-sm">0{index + 1}</span>
+                      <span className="w-4 h-[1px] bg-[var(--line)]" />
+                      <span>{project.category}</span>
+                    </span>
 
-                    {(project.statusLabel || project.isConcept) && (
-                      <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-[var(--oxblood)] border border-[var(--oxblood)]/30 px-2 py-0.5 rounded-none">
-                        {project.statusLabel || 'Under Progress'}
-                      </span>
-                    )}
+                    <span
+                      className={`font-mono text-[11px] uppercase tracking-wider font-medium ${
+                        isConcept ? 'text-[var(--secondary)]' : 'text-[var(--accent)]'
+                      }`}
+                    >
+                      {project.statusBadge}
+                    </span>
                   </div>
-                </div>
 
-                {/* Right: Tags (if non-empty) & Arrow */}
-                <div className="flex items-center justify-between md:justify-end gap-6 pl-12 md:pl-0">
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-muted)]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                  {/* Title & Tagline */}
+                  <div>
+                    <h3 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[var(--ink)] group-hover:text-[var(--primary)] transition-colors leading-[1.05]">
+                      {project.title}
+                    </h3>
+                    <p className="font-mono text-xs sm:text-sm text-[var(--secondary)] mt-2">
+                      {project.tagline}
+                    </p>
+                  </div>
+
+                  {/* Narrative Description */}
+                  <p className="font-display text-base sm:text-lg text-[var(--ink)]/85 leading-relaxed max-w-2xl">
+                    {project.description}
+                  </p>
+
+                  {/* Key Highlights */}
+                  {project.highlights && project.highlights.length > 0 && (
+                    <div className="pt-2 space-y-2">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--ink-muted)] block">
+                        Architectural Highlights
+                      </span>
+                      <ul className="space-y-1.5 font-display text-sm text-[var(--ink-muted)]">
+                        {project.highlights.map((highlight, hIdx) => (
+                          <li key={hIdx} className="flex items-start gap-2.5">
+                            <span className="text-[var(--primary)] font-bold text-xs mt-0.5 select-none">✦</span>
+                            <span>{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 
-                  <span
-                    aria-hidden="true"
-                    className="w-8 h-8 rounded-[6px] bg-[rgba(3,81,75,0.5)] group-hover:bg-[#00827c] text-white flex items-center justify-center font-mono text-sm transition-all duration-200 shrink-0"
-                  >
-                    ↗
-                  </span>
-                </div>
-              </div>
-
-              {/* Mobile Inline Preview Slot (16px radius, Kelp surface) */}
-              <div aria-hidden="true" className="md:hidden mt-4 pl-12">
-                <div className="w-40 h-24 bg-[#003734] border border-white/10 rounded-[16px] flex flex-col items-center justify-center">
-                  <span className="font-display font-medium text-3xl text-[#cbfffc]/40">
-                    {project.name.charAt(0)}
-                  </span>
-                  <span className="font-display text-[10px] uppercase tracking-[0.1em] text-[#edfffe] mt-1">
-                    Auros Preview
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-
-          return (
-            <div
-              key={project.id}
-              className="group relative"
-              onPointerEnter={() => setHoveredIndex(index)}
-              onPointerLeave={() => setHoveredIndex(null)}
-            >
-              {/* 1px hairline drawing in on viewport entry (900ms) */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, margin: '-10%' }}
-                transition={{
-                  duration: prefersReduced ? 0.2 : 0.9,
-                  ease: [0.76, 0, 0.24, 1],
-                  delay: prefersReduced ? 0 : index * 0.08,
-                }}
-                className="w-full h-[1px] bg-[var(--line)] origin-left"
-              />
-
-              {/* Staggered entrance for row content (80ms per row) */}
-              <motion.div
-                initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-10%' }}
-                transition={{
-                  duration: prefersReduced ? 0.2 : 0.7,
-                  ease: [0.76, 0, 0.24, 1],
-                  delay: prefersReduced ? 0 : index * 0.08,
-                }}
-              >
-                {projectUrl ? (
-                  <a
-                    href={projectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-cursor="project"
-                    aria-label={`${project.name}${project.statusLabel ? ` (${project.statusLabel})` : project.isConcept ? ' (Under Progress)' : ''}`}
-                    className="block outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)] focus-visible:ring-offset-4"
-                  >
-                    {rowContent}
-                  </a>
-                ) : (
-                  <div
-                    role="article"
-                    data-cursor="project"
-                    aria-label={`${project.name}${project.statusLabel ? ` (${project.statusLabel})` : project.isConcept ? ' (Under Progress)' : ''}`}
-                    className="block cursor-default"
-                  >
-                    {rowContent}
+                  {/* Clean Typographic Tech Stack (No Pill Slop) */}
+                  <div className="pt-4 border-t border-[var(--line)]">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--ink-muted)] block mb-1.5">
+                      Technologies &amp; Architecture
+                    </span>
+                    <div className="flex flex-wrap items-center gap-x-2 text-xs font-mono text-[var(--secondary)]">
+                      {project.tags.map((tag, tIdx) => (
+                        <React.Fragment key={tag}>
+                          <span className="text-[var(--ink)]">{tag}</span>
+                          {tIdx < project.tags.length - 1 && (
+                            <span className="text-[var(--ink-muted)]/40" aria-hidden="true">
+                              ·
+                            </span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
                   </div>
-                )}
-              </motion.div>
-            </div>
+                </div>
+
+                {/* Right Column (Cols 9-12): Live Links, Role, Artifact Coordinates */}
+                <div className="lg:col-span-4 flex flex-col justify-between h-full pt-2 lg:pt-0 lg:border-l lg:border-[var(--line)] lg:pl-8 space-y-6">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--ink-muted)] block mb-1">
+                      Role
+                    </span>
+                    <p className="font-mono text-xs font-medium text-[var(--ink)]">
+                      {project.role}
+                    </p>
+                  </div>
+
+                  {/* Action Links */}
+                  <div className="space-y-3 pt-2">
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor="link"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider font-semibold transition-all hover:opacity-90 active:scale-95 shadow-[0_0_20px_var(--primary-glow)]"
+                      >
+                        <span>Launch Live App</span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+
+                    {project.repoUrl && (
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor="link"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[var(--border-bright)] hover:border-[var(--primary)] bg-[var(--paper)] text-[var(--ink)] font-mono text-xs uppercase tracking-wider transition-all"
+                      >
+                        <span>Source Code</span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+
+                    {isConcept && (
+                      <div className="p-3.5 rounded-xl border border-[var(--border-accent)] bg-[var(--accent)]/5 font-mono text-xs text-[var(--accent)]">
+                        <span className="block font-semibold mb-0.5">Architectural Specification</span>
+                        <span className="text-[11px] text-[var(--ink-muted)]">
+                          Active prototype design and marketplace model under development.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t border-[var(--line)] text-[10px] font-mono text-[var(--ink-muted)]">
+                    <span>Verified Project Asset · Lalit Choudhary</span>
+                  </div>
+                </div>
+              </div>
+            </motion.article>
           );
         })}
       </div>

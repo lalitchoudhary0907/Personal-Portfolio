@@ -35,11 +35,11 @@ export const Footer: React.FC = () => {
   return (
     <footer
       role="contentinfo"
-      className="w-full border-t border-white/10 bg-[#011d1c] text-[#ffffff] pt-16 pb-[max(3rem,calc(2rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 select-none"
+      className="w-full border-t border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] pt-16 pb-[max(3rem,calc(2rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 select-none"
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 font-display text-[12px] uppercase tracking-[0.12em] text-[#bbc7c6]">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink-muted)]">
         {/* Left: Copyright */}
-        <div className="text-[#edfffe]">
+        <div className="text-[var(--ink)]">
           &copy; 2026 {profile.name} · BTech CSAI
         </div>
 
@@ -55,7 +55,7 @@ export const Footer: React.FC = () => {
             onClick={handleReplayIntro}
             data-cursor="link"
             aria-label="Replay cover intro animation"
-            className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-[6px] hover:bg-[#003734] hover:text-[#cbfffc] transition-colors cursor-pointer"
+            className="min-h-[44px] inline-flex items-center px-3 py-1.5 border border-transparent hover:border-[var(--line)] hover:text-[var(--primary)] transition-colors cursor-pointer"
           >
             Replay Intro &larr;
           </motion.button>
@@ -70,7 +70,7 @@ export const Footer: React.FC = () => {
             onClick={handleBackToTop}
             data-cursor="link"
             aria-label="Scroll back to top of page"
-            className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-[6px] hover:bg-[#003734] hover:text-[#cbfffc] transition-colors"
+            className="min-h-[44px] inline-flex items-center px-3 py-1.5 border border-transparent hover:border-[var(--line)] hover:text-[var(--primary)] transition-colors"
           >
             Back to Top &uarr;
           </motion.a>
@@ -78,10 +78,10 @@ export const Footer: React.FC = () => {
           <a
             href="/?tokens"
             data-cursor="link"
-            className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-[6px] text-[#bbc7c6]/60 hover:text-[#cbfffc] transition-colors"
+            className="min-h-[44px] inline-flex items-center px-3 py-1.5 text-[var(--ink-muted)]/70 hover:text-[var(--primary)] transition-colors"
             title="Design Tokens & Style Guide"
           >
-            Auros Tokens
+            Design Tokens
           </a>
         </div>
       </div>
