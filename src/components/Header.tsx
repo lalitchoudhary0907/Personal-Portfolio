@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { useMagnetic } from '../hooks/useMagnetic';
 
 interface NavItem {
@@ -28,11 +28,21 @@ const MagneticNavLink: React.FC<{
     maxOffset: 8,
   });
 
+  const handleClick = (e: React.MouseEvent) => {
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, '', href);
+    }
+  };
+
   return (
     <motion.a
       ref={ref}
       style={style}
       href={href}
+      onClick={handleClick}
       data-cursor="link"
       className="group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors inline-flex items-center"
     >
@@ -52,6 +62,14 @@ export const Header: React.FC = () => {
   const lastScrollY = useRef(0);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic Scroll Progress Bar
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 260,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   // Logo magnetic physics
   const logoMagnetic = useMagnetic<HTMLAnchorElement>({
@@ -146,15 +164,20 @@ export const Header: React.FC = () => {
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between gap-6 relative">
           {/* LC Monogram linking to #top (min 44px tap target) */}
           <motion.a
             ref={logoMagnetic.ref}
             style={logoMagnetic.style}
             href="#top"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              window.history.pushState(null, '', '#top');
+            }}
             data-cursor="link"
             aria-label="Lalit Choudhary — Top of page"
-            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-start font-display font-extrabold text-2xl tracking-tighter text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors select-none"
+            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-start font-display font-extrabold text-2xl tracking-tighter text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors select-none cursor-pointer"
           >
             LC
           </motion.a>
@@ -176,7 +199,7 @@ export const Header: React.FC = () => {
               onClick={() => window.dispatchEvent(new CustomEvent('replay_intro'))}
               data-cursor="link"
               aria-label="Replay 6-second cinematic tech introduction"
-              className="font-mono text-[11px] uppercase tracking-wider text-[#8E9BAE] hover:text-[#00F2FE] px-3 py-1.5 border border-white/10 hover:border-[#00F2FE]/50 bg-white/[0.03] transition-colors cursor-pointer"
+              className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-muted)] hover:text-[var(--primary)] px-3 py-1.5 border border-white/10 hover:border-[var(--primary)]/50 bg-white/[0.03] transition-colors cursor-pointer"
             >
               Intro ↺
             </button>
@@ -191,11 +214,17 @@ export const Header: React.FC = () => {
             aria-controls="mobile-overlay-menu"
             aria-label="Open navigation menu"
             data-cursor="link"
-            className="md:hidden min-h-[44px] min-w-[44px] inline-flex items-center justify-center font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--oxblood)] border border-[var(--line)] hover:border-[var(--oxblood)] px-4 py-2 transition-colors cursor-pointer"
+            className="md:hidden min-h-[44px] min-w-[44px] inline-flex items-center justify-center font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--primary)] border border-[var(--line)] hover:border-[var(--primary)] px-4 py-2 transition-colors cursor-pointer"
           >
             Menu
           </button>
         </div>
+
+        {/* Dynamic Global Scroll Progress Bar */}
+        <motion.div
+          style={{ scaleX: smoothProgress }}
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--primary)] origin-left shadow-[0_0_12px_var(--primary-glow)]"
+        />
       </header>
 
       {/* Mobile Full-Screen Paper Overlay (<768px, safe-area padded) */}
@@ -235,9 +264,19 @@ export const Header: React.FC = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={closeMenu}
+                  onClick={(e) => {
+                    const target = document.querySelector(item.href);
+                    if (target) {
+                      e.preventDefault();
+                      closeMenu();
+                      target.scrollIntoView({ behavior: 'smooth' });
+                      window.history.pushState(null, '', item.href);
+                    } else {
+                      closeMenu();
+                    }
+                  }}
                   data-cursor="link"
-                  className="group flex items-baseline justify-between font-display text-[clamp(2.5rem,10vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors border-b border-[var(--line)] pb-3"
+                  className="group flex items-baseline justify-between font-display text-[clamp(2.5rem,10vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--oxblood)] transition-colors border-b border-[var(--line)] pb-3 cursor-pointer"
                 >
                   <span>{item.label}</span>
                   <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)] group-hover:text-[var(--oxblood)] transition-colors">

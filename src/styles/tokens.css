@@ -3,38 +3,234 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/* High-Tech Developer Cyber Dark Design Tokens */
-:root {
-  /* Dark Tech Canvas & Surfaces */
-  --paper: #08090D;
-  --paper-deep: #0E131E;
-  --paper-card: rgba(14, 19, 30, 0.75);
-  
-  /* High-Contrast Readability */
-  --ink: #F0F6FC;
-  --ink-muted: #8E9BAE;
-  --ink-faint: #525E72;
-  
-  /* Electric Tech Accents */
-  --oxblood: #00F2FE; /* Primary electric cyan accent */
-  --accent-cyan: #00F2FE;
-  --accent-cyan-glow: rgba(0, 242, 254, 0.35);
-  --accent-violet: #8B5CF6;
-  --accent-violet-glow: rgba(139, 92, 246, 0.35);
-  --accent-emerald: #10B981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.35);
-  
-  /* Glass Hairlines & Borders */
-  --line: rgba(255, 255, 255, 0.08);
-  --line-bright: rgba(255, 255, 255, 0.16);
-  --line-cyan: rgba(0, 242, 254, 0.3);
+/* =========================================================================
+   PREMIUM PORTFOLIO DESIGN TOKEN SYSTEM
+   Four Curated Visual Identifies with Full Atmospheric & Shader Token Maps
+   ========================================================================= */
 
-  /* Typography */
+/* Default Root & Palette A: Obsidian × Electric Cobalt */
+:root,
+[data-theme="palette-a"] {
+  /* Canvas & Surfaces */
+  --paper: #080C16;
+  --paper-deep: #151D32;
+  --paper-card: rgba(21, 29, 50, 0.75);
+
+  /* High-Contrast Readability */
+  --ink: #F4F7FF;
+  --ink-muted: #8B9BB4;
+  --ink-faint: #4A576E;
+
+  /* Brand Chromatic Hierarchy */
+  --primary: #688BFF;
+  --primary-glow: rgba(104, 139, 255, 0.35);
+  --oxblood: #688BFF; /* Maintained for semantic backward-compatibility */
+  
+  --secondary: #A6B8DD;
+  --secondary-glow: rgba(166, 184, 221, 0.25);
+  
+  --accent: #B5FCDE;
+  --accent-glow: rgba(181, 252, 222, 0.35);
+
+  /* Precision Glass Hairlines & Borders */
+  --line: rgba(104, 139, 255, 0.14);
+  --line-bright: rgba(104, 139, 255, 0.32);
+  --line-accent: rgba(181, 252, 222, 0.35);
+  --border: rgba(104, 139, 255, 0.14);
+  --border-bright: rgba(104, 139, 255, 0.32);
+  --border-accent: rgba(181, 252, 222, 0.35);
+
+  /* Interactive States */
+  --selection-bg: #688BFF;
+  --selection-text: #080C16;
+  --focus-ring: #688BFF;
+
+  /* Atmospheric Gradients */
+  --gradient-ambient-1: radial-gradient(circle at 15% 20%, rgba(104, 139, 255, 0.16) 0%, transparent 60%);
+  --gradient-ambient-2: radial-gradient(circle at 85% 80%, rgba(181, 252, 222, 0.12) 0%, transparent 60%);
+  --gradient-accent: linear-gradient(135deg, #688BFF 0%, #B5FCDE 100%);
+  --gradient-card: linear-gradient(180deg, rgba(21, 29, 50, 0.85) 0%, rgba(12, 17, 30, 0.95) 100%);
+
+  /* Shader RGB Vec3 Uniforms (0.0 to 1.0) */
+  --shader-bg-r: 0.031;
+  --shader-bg-g: 0.047;
+  --shader-bg-b: 0.086;
+  --shader-primary-r: 0.408;
+  --shader-primary-g: 0.545;
+  --shader-primary-b: 1.0;
+  --shader-accent-r: 0.71;
+  --shader-accent-g: 0.988;
+  --shader-accent-b: 0.871;
+}
+
+/* Palette B: Graphite × Ultraviolet */
+[data-theme="palette-b"] {
+  /* Canvas & Surfaces */
+  --paper: #0C0B13;
+  --paper-deep: #1E192B;
+  --paper-card: rgba(30, 25, 43, 0.75);
+
+  /* High-Contrast Readability */
+  --ink: #FAF5FF;
+  --ink-muted: #998FA8;
+  --ink-faint: #5A5168;
+
+  /* Brand Chromatic Hierarchy */
+  --primary: #A68AFF;
+  --primary-glow: rgba(166, 138, 255, 0.35);
+  --oxblood: #A68AFF;
+  
+  --secondary: #D0BCD9;
+  --secondary-glow: rgba(208, 188, 217, 0.25);
+  
+  --accent: #E8B6D9;
+  --accent-glow: rgba(232, 182, 217, 0.35);
+
+  /* Precision Glass Hairlines & Borders */
+  --line: rgba(166, 138, 255, 0.15);
+  --line-bright: rgba(166, 138, 255, 0.35);
+  --line-accent: rgba(232, 182, 217, 0.35);
+  --border: rgba(166, 138, 255, 0.15);
+  --border-bright: rgba(166, 138, 255, 0.35);
+  --border-accent: rgba(232, 182, 217, 0.35);
+
+  /* Interactive States */
+  --selection-bg: #A68AFF;
+  --selection-text: #0C0B13;
+  --focus-ring: #A68AFF;
+
+  /* Atmospheric Gradients */
+  --gradient-ambient-1: radial-gradient(circle at 15% 20%, rgba(166, 138, 255, 0.18) 0%, transparent 60%);
+  --gradient-ambient-2: radial-gradient(circle at 85% 80%, rgba(232, 182, 217, 0.14) 0%, transparent 60%);
+  --gradient-accent: linear-gradient(135deg, #A68AFF 0%, #E8B6D9 100%);
+  --gradient-card: linear-gradient(180deg, rgba(30, 25, 43, 0.85) 0%, rgba(18, 15, 26, 0.95) 100%);
+
+  /* Shader RGB Vec3 Uniforms */
+  --shader-bg-r: 0.047;
+  --shader-bg-g: 0.043;
+  --shader-bg-b: 0.075;
+  --shader-primary-r: 0.651;
+  --shader-primary-g: 0.541;
+  --shader-primary-b: 1.0;
+  --shader-accent-r: 0.91;
+  --shader-accent-g: 0.714;
+  --shader-accent-b: 0.851;
+}
+
+/* Palette C: Midnight × Copper Ember */
+[data-theme="palette-c"] {
+  /* Canvas & Surfaces */
+  --paper: #101214;
+  --paper-deep: #252528;
+  --paper-card: rgba(37, 37, 40, 0.78);
+
+  /* High-Contrast Readability */
+  --ink: #FAF5EC;
+  --ink-muted: #9E968F;
+  --ink-faint: #5C5651;
+
+  /* Brand Chromatic Hierarchy */
+  --primary: #F19A6B;
+  --primary-glow: rgba(241, 154, 107, 0.35);
+  --oxblood: #F19A6B;
+  
+  --secondary: #CEC6BE;
+  --secondary-glow: rgba(206, 198, 190, 0.25);
+  
+  --accent: #C8E1D2;
+  --accent-glow: rgba(200, 225, 210, 0.35);
+
+  /* Precision Glass Hairlines & Borders */
+  --line: rgba(241, 154, 107, 0.16);
+  --line-bright: rgba(241, 154, 107, 0.36);
+  --line-accent: rgba(200, 225, 210, 0.35);
+  --border: rgba(241, 154, 107, 0.16);
+  --border-bright: rgba(241, 154, 107, 0.36);
+  --border-accent: rgba(200, 225, 210, 0.35);
+
+  /* Interactive States */
+  --selection-bg: #F19A6B;
+  --selection-text: #101214;
+  --focus-ring: #F19A6B;
+
+  /* Atmospheric Gradients */
+  --gradient-ambient-1: radial-gradient(circle at 15% 20%, rgba(241, 154, 107, 0.18) 0%, transparent 60%);
+  --gradient-ambient-2: radial-gradient(circle at 85% 80%, rgba(200, 225, 210, 0.14) 0%, transparent 60%);
+  --gradient-accent: linear-gradient(135deg, #F19A6B 0%, #C8E1D2 100%);
+  --gradient-card: linear-gradient(180deg, rgba(37, 37, 40, 0.85) 0%, rgba(22, 23, 26, 0.95) 100%);
+
+  /* Shader RGB Vec3 Uniforms */
+  --shader-bg-r: 0.063;
+  --shader-bg-g: 0.071;
+  --shader-bg-b: 0.078;
+  --shader-primary-r: 0.945;
+  --shader-primary-g: 0.604;
+  --shader-primary-b: 0.42;
+  --shader-accent-r: 0.784;
+  --shader-accent-g: 0.882;
+  --shader-accent-b: 0.824;
+}
+
+/* Palette D: Deep Space × Quantum Mint */
+[data-theme="palette-d"] {
+  /* Canvas & Surfaces */
+  --paper: #07131A;
+  --paper-deep: #10232C;
+  --paper-card: rgba(16, 35, 44, 0.76);
+
+  /* High-Contrast Readability */
+  --ink: #F0FCFA;
+  --ink-muted: #7E9BA8;
+  --ink-faint: #445D6B;
+
+  /* Brand Chromatic Hierarchy */
+  --primary: #56E6C1;
+  --primary-glow: rgba(86, 230, 193, 0.35);
+  --oxblood: #56E6C1;
+  
+  --secondary: #96B7C4;
+  --secondary-glow: rgba(150, 183, 196, 0.25);
+  
+  --accent: #B5AAFF;
+  --accent-glow: rgba(181, 170, 255, 0.35);
+
+  /* Precision Glass Hairlines & Borders */
+  --line: rgba(86, 230, 193, 0.16);
+  --line-bright: rgba(86, 230, 193, 0.36);
+  --line-accent: rgba(181, 170, 255, 0.35);
+  --border: rgba(86, 230, 193, 0.16);
+  --border-bright: rgba(86, 230, 193, 0.36);
+  --border-accent: rgba(181, 170, 255, 0.35);
+
+  /* Interactive States */
+  --selection-bg: #56E6C1;
+  --selection-text: #07131A;
+  --focus-ring: #56E6C1;
+
+  /* Atmospheric Gradients */
+  --gradient-ambient-1: radial-gradient(circle at 15% 20%, rgba(86, 230, 193, 0.18) 0%, transparent 60%);
+  --gradient-ambient-2: radial-gradient(circle at 85% 80%, rgba(181, 170, 255, 0.14) 0%, transparent 60%);
+  --gradient-accent: linear-gradient(135deg, #56E6C1 0%, #B5AAFF 100%);
+  --gradient-card: linear-gradient(180deg, rgba(16, 35, 44, 0.85) 0%, rgba(9, 21, 29, 0.95) 100%);
+
+  /* Shader RGB Vec3 Uniforms */
+  --shader-bg-r: 0.027;
+  --shader-bg-g: 0.075;
+  --shader-bg-b: 0.102;
+  --shader-primary-r: 0.337;
+  --shader-primary-g: 0.902;
+  --shader-primary-b: 0.757;
+  --shader-accent-r: 0.71;
+  --shader-accent-g: 0.667;
+  --shader-accent-b: 1.0;
+}
+
+/* Common Typography & Motion Foundations */
+:root {
   --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-mono: 'DM Mono', monospace;
 
-  /* Motion Curves */
   --ease-reveal: cubic-bezier(0.76, 0, 0.24, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -68,7 +264,7 @@
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  color: var(--accent-cyan);
+  color: var(--primary);
 }
 
 .type-label {

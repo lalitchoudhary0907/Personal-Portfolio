@@ -48,11 +48,11 @@ export const Contact: React.FC = () => {
         <div className="mb-12 sm:mb-16">
           <SectionLabelCounter
             label="05 / CONTACT"
-            lineColor="bg-[#00F2FE]/40"
-            className="mb-4 text-[#8E9BAE]"
+            lineColor="bg-[var(--primary)]/40"
+            className="mb-4 text-[var(--ink-muted)]"
           />
-          <Heading id="contact-heading" className="text-[#F0F6FC]">
-            Direct <SerifAccent className="text-[#00F2FE]">Dialogue</SerifAccent>
+          <Heading id="contact-heading" className="text-[var(--ink)]">
+            Direct <SerifAccent className="text-[var(--primary)]">Dialogue</SerifAccent>
           </Heading>
         </div>
 
@@ -67,7 +67,7 @@ export const Contact: React.FC = () => {
             href={`mailto:${profile.contact.email}`}
             data-cursor="link"
             aria-label={`Send email to ${profile.contact.email}`}
-            className="font-display text-[clamp(1.75rem,5.5vw,4.5rem)] font-bold tracking-tight text-[#F0F6FC] hover:text-[#00F2FE] break-all inline-block transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#00F2FE]"
+            className="font-display text-[clamp(1.75rem,5.5vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--primary)] break-all inline-block transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             {profile.contact.email}
           </motion.a>
@@ -84,15 +84,15 @@ export const Contact: React.FC = () => {
               onClick={handleCopyEmail}
               data-cursor="link"
               aria-label="Copy email address to clipboard"
-              className="min-h-[44px] inline-flex items-center justify-center font-mono text-xs uppercase tracking-widest px-6 py-3 border border-[#00F2FE]/40 hover:border-[#00F2FE] text-[#00F2FE] hover:bg-[#00F2FE]/10 transition-colors cursor-pointer"
+              className="min-h-[44px] inline-flex items-center justify-center font-mono text-xs uppercase tracking-widest px-6 py-3 border border-[var(--border-bright)] hover:border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer"
             >
               {copied ? 'Copied to Clipboard' : 'Copy Email'}
             </motion.button>
 
             {/* Screen reader & visual status announcement */}
-            <div aria-live="polite" className="font-mono text-xs text-[#8E9BAE]">
+            <div aria-live="polite" className="font-mono text-xs text-[var(--ink-muted)]">
               {copied && (
-                <span className="flex items-center gap-1.5 text-[#10B981]">
+                <span className="flex items-center gap-1.5 text-[var(--accent)]">
                   <span>✦</span> Email copied to clipboard
                 </span>
               )}
@@ -102,7 +102,7 @@ export const Contact: React.FC = () => {
 
         {/* Social / Profile Links */}
         <div className="pt-10 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <span className="font-mono text-xs uppercase tracking-widest text-[#8E9BAE]">
+          <span className="font-mono text-xs uppercase tracking-widest text-[var(--ink-muted)]">
             External Profiles
           </span>
 
@@ -114,14 +114,14 @@ export const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 data-cursor="link"
                 aria-label="GitHub profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[#F0F6FC] hover:text-[#00F2FE] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200"
               >
                 <span>GitHub</span>
                 <span
                   aria-hidden="true"
                   className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
                 >
-                  &nearr;
+                  ↗
                 </span>
               </a>
             )}
@@ -133,14 +133,14 @@ export const Contact: React.FC = () => {
                 rel="noopener noreferrer"
                 data-cursor="link"
                 aria-label="LinkedIn profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[#F0F6FC] hover:text-[#00F2FE] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200"
               >
                 <span>LinkedIn</span>
                 <span
                   aria-hidden="true"
                   className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
                 >
-                  &nearr;
+                  ↗
                 </span>
               </a>
             )}

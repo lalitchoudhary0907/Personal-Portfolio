@@ -5,6 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useTheme } from '../context/ThemeContext';
 
 interface Dot {
   x: number;
@@ -32,6 +33,7 @@ export const AmbientBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const prefersReduced = usePrefersReducedMotion();
   const [isTabVisible, setIsTabVisible] = useState(true);
+  const { activePalette } = useTheme();
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -65,11 +67,16 @@ export const AmbientBackground: React.FC = () => {
     const dotCount = Math.floor(Math.min(130, Math.max(50, (width * height) / 14000)));
     const dots: Dot[] = [];
 
+    const pColor = activePalette.colors.primary;
+    const aColor = activePalette.colors.accent;
+    const sColor = activePalette.colors.secondary;
+    const tColor = activePalette.colors.text;
+
     const colors = [
-      { fill: 'rgba(0, 242, 254, 0.75)', glow: 'rgba(0, 242, 254, 0.4)' }, // Cyan
-      { fill: 'rgba(139, 92, 246, 0.75)', glow: 'rgba(139, 92, 246, 0.4)' }, // Violet
-      { fill: 'rgba(240, 246, 252, 0.65)', glow: 'rgba(240, 246, 252, 0.3)' }, // Soft White
-      { fill: 'rgba(16, 185, 129, 0.7)', glow: 'rgba(16, 185, 129, 0.35)' }, // Emerald
+      { fill: `${pColor}bb`, glow: `${pColor}66` },
+      { fill: `${sColor}aa`, glow: `${sColor}55` },
+      { fill: `${tColor}99`, glow: `${tColor}44` },
+      { fill: `${aColor}bb`, glow: `${aColor}66` },
     ];
 
     for (let i = 0; i < dotCount; i++) {
@@ -145,11 +152,14 @@ export const AmbientBackground: React.FC = () => {
         rip.radius += 3.5;
         rip.alpha *= 0.94;
 
+        ctx.save();
         ctx.beginPath();
         ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0, 242, 254, ${rip.alpha * 0.4})`;
+        ctx.strokeStyle = pColor;
+        ctx.globalAlpha = Math.max(0, rip.alpha * 0.45);
         ctx.lineWidth = 1.5;
         ctx.stroke();
+        ctx.restore();
 
         if (rip.alpha < 0.02 || rip.radius > rip.maxRadius) {
           ripples.splice(r, 1);
@@ -218,12 +228,15 @@ export const AmbientBackground: React.FC = () => {
 
           if (dist < maxConnDist) {
             const alpha = (1 - dist / maxConnDist) * 0.22;
+            ctx.save();
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
+            ctx.strokeStyle = pColor;
+            ctx.globalAlpha = Math.max(0, alpha);
             ctx.lineWidth = 0.75;
             ctx.stroke();
+            ctx.restore();
           }
         }
 
@@ -234,12 +247,15 @@ export const AmbientBackground: React.FC = () => {
           const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
           if (pdist < pointer.radius) {
             const pAlpha = (1 - pdist / pointer.radius) * 0.35;
+            ctx.save();
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(pointer.x, pointer.y);
-            ctx.strokeStyle = `rgba(0, 242, 254, ${pAlpha})`;
+            ctx.strokeStyle = aColor;
+            ctx.globalAlpha = Math.max(0, pAlpha);
             ctx.lineWidth = 1;
             ctx.stroke();
+            ctx.restore();
           }
         }
       }
@@ -258,12 +274,12 @@ export const AmbientBackground: React.FC = () => {
       window.removeEventListener('click', handleClick);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isTabVisible, prefersReduced]);
+  }, [isTabVisible, prefersReduced, activePalette]);
 
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none bg-[#08090D]"
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none bg-[var(--paper)] transition-colors duration-700"
     >
       {/* 1. Subtle Cyber Grid Hairlines */}
       <div
@@ -277,16 +293,31 @@ export const AmbientBackground: React.FC = () => {
         }}
       />
 
-      {/* 2. Floating Fluid Chromatic Glow Orbs */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Electric Cyan Fluid Orb (Top Left -> Center) */}
-        <div className="absolute -top-[15%] -left-[10%] w-[58vw] h-[58vw] rounded-full bg-gradient-to-br from-[#00F2FE]/15 via-[#00c6ff]/10 to-transparent blur-[130px] animate-fluid-orb-1" />
+      {/* 2. Floating Fluid Chromatic Glow Orbs with dynamic palette colors */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none transition-all duration-700">
+        {/* Primary Fluid Orb (Top Left -> Center) */}
+        <div
+          className="absolute -top-[15%] -left-[10%] w-[58vw] h-[58vw] rounded-full blur-[130px] animate-fluid-orb-1 transition-all duration-700"
+          style={{
+            background: `radial-gradient(circle, ${activePalette.colors.primary}25 0%, ${activePalette.colors.secondary}15 45%, transparent 70%)`,
+          }}
+        />
 
-        {/* Neon Violet Fluid Orb (Bottom Right -> Center) */}
-        <div className="absolute -bottom-[20%] -right-[10%] w-[62vw] h-[62vw] rounded-full bg-gradient-to-tl from-[#8B5CF6]/16 via-[#6366F1]/12 to-transparent blur-[140px] animate-fluid-orb-2" />
+        {/* Accent / Secondary Fluid Orb (Bottom Right -> Center) */}
+        <div
+          className="absolute -bottom-[20%] -right-[10%] w-[62vw] h-[62vw] rounded-full blur-[140px] animate-fluid-orb-2 transition-all duration-700"
+          style={{
+            background: `radial-gradient(circle, ${activePalette.colors.accent}22 0%, ${activePalette.colors.primary}12 45%, transparent 70%)`,
+          }}
+        />
 
-        {/* Subtle Emerald Core Glow (Center Accent) */}
-        <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-[#10B981]/08 blur-[160px] animate-pulse" />
+        {/* Subtle Accent Core Glow (Center Accent) */}
+        <div
+          className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full blur-[160px] animate-pulse transition-all duration-700"
+          style={{
+            background: `radial-gradient(circle, ${activePalette.colors.accent}14 0%, transparent 65%)`,
+          }}
+        />
       </div>
 
       {/* 3. High-Performance Interactive Fluid Dot & Filament Canvas */}

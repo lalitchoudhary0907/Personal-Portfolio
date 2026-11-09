@@ -5,101 +5,168 @@
 
 import React from 'react';
 import { Display, Heading, Body, SerifAccent, Label } from './Typography';
+import { useTheme } from '../context/ThemeContext';
+import { PALETTE_LIST } from '../config/palettes';
+import { PaletteId } from '../types/theme';
 
 export const StyleGuide: React.FC = () => {
+  const { paletteId, setPaletteId, activePalette } = useTheme();
+
   const swatches = [
     {
-      name: 'Obsidian Void',
+      name: 'Background Void',
       token: '--paper',
-      hex: '#08090D',
-      bgClass: 'bg-[#08090D]',
+      hex: activePalette.colors.background,
+      bgStyle: { backgroundColor: activePalette.colors.background },
       borderClass: 'border-white/10',
-      textClass: 'text-[#F0F6FC]',
-      role: 'Main canvas background',
-      contrast: 'Deep Obsidian Base',
+      textClass: 'text-[var(--ink)]',
+      role: 'Main canvas viewport background',
+      contrast: `${activePalette.contrast.textOnBackground} (Text / BG)`,
     },
     {
-      name: 'Elevated Slate',
+      name: 'Surface Card',
       token: '--paper-deep',
-      hex: '#0E131E',
-      bgClass: 'bg-[#0E131E]',
+      hex: activePalette.colors.surface,
+      bgStyle: { backgroundColor: activePalette.colors.surface },
       borderClass: 'border-white/10',
-      textClass: 'text-[#F0F6FC]',
-      role: 'Card surfaces & telemetry panels',
-      contrast: 'Subtle Glass Contrast',
+      textClass: 'text-[var(--ink)]',
+      role: 'Card surfaces & elevated panels',
+      contrast: `${activePalette.contrast.textOnSurface} (Text / Surface)`,
     },
     {
-      name: 'Crisp Terminal White',
-      token: '--ink',
-      hex: '#F0F6FC',
-      bgClass: 'bg-[#F0F6FC]',
-      borderClass: 'border-white',
+      name: 'Primary Brand',
+      token: '--primary',
+      hex: activePalette.colors.primary,
+      bgStyle: { backgroundColor: activePalette.colors.primary },
+      borderClass: 'border-transparent',
       textClass: 'text-[#08090D]',
-      role: 'Primary high-contrast typography',
-      contrast: '16.5:1 on Obsidian (AAA)',
+      role: 'Primary action buttons, active navigation, key highlights',
+      contrast: `${activePalette.contrast.primaryOnBackground} (AAA)`,
     },
     {
-      name: 'Tech Slate Muted',
-      token: '--ink-muted',
-      hex: '#8E9BAE',
-      bgClass: 'bg-[#8E9BAE]',
-      borderClass: 'border-white/20',
+      name: 'Secondary Accent',
+      token: '--secondary',
+      hex: activePalette.colors.secondary,
+      bgStyle: { backgroundColor: activePalette.colors.secondary },
+      borderClass: 'border-transparent',
       textClass: 'text-[#08090D]',
-      role: 'Secondary copy, telemetry & indices',
-      contrast: '6.4:1 on Obsidian (AA)',
+      role: 'Secondary typography, subtle labels, architectural tags',
+      contrast: 'Secondary tone',
     },
     {
-      name: 'Electric Cyan',
-      token: '--oxblood',
-      hex: '#00F2FE',
-      bgClass: 'bg-[#00F2FE]',
-      borderClass: 'border-[#00F2FE]',
+      name: 'High-Frequency Accent',
+      token: '--accent',
+      hex: activePalette.colors.accent,
+      bgStyle: { backgroundColor: activePalette.colors.accent },
+      borderClass: 'border-transparent',
       textClass: 'text-[#08090D]',
-      role: 'Neon accent, focus ring, laser strips, active badges',
-      contrast: '13.8:1 on Obsidian (AAA)',
+      role: 'Luminescent highlights, interactive badges, hover glow',
+      contrast: `${activePalette.contrast.accentOnBackground} (AAA)`,
     },
     {
-      name: 'Glass Hairline',
+      name: 'Structural Hairline',
       token: '--line',
-      hex: 'rgba(255, 255, 255, 0.08)',
-      bgClass: 'bg-white/10',
+      hex: activePalette.colors.border,
+      bgStyle: { backgroundColor: activePalette.colors.border },
       borderClass: 'border-white/10',
-      textClass: 'text-[#F0F6FC]',
+      textClass: 'text-[var(--ink)]',
       role: '1px glass dividers & structural bounds',
-      contrast: 'Subtle Glass Grid',
+      contrast: 'Glass Line',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-paper text-ink px-6 py-12 sm:py-20">
+    <div className="min-h-screen bg-[var(--paper)] text-[var(--ink)] px-6 py-12 sm:py-20 transition-colors duration-500">
       <div className="max-w-6xl mx-auto space-y-16 sm:space-y-24">
         {/* Style Guide Header */}
-        <header className="border-b border-line pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <header className="border-b border-[var(--line)] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
-            <Label className="block mb-2 text-ink-muted">00 / System Specification</Label>
-            <Heading as="h1" className="text-3xl sm:text-5xl font-bold tracking-tight">
-              Design Tokens &amp; <SerifAccent>Typography</SerifAccent>
+            <Label className="block mb-2 text-[var(--ink-muted)]">00 / System Specification</Label>
+            <Heading as="h1" className="text-3xl sm:text-5xl font-bold tracking-tight text-[var(--ink)]">
+              Design Tokens &amp; <SerifAccent className="text-[var(--primary)]">Identities</SerifAccent>
             </Heading>
           </div>
           <div className="flex items-center gap-4">
             <a
               href="/"
-              className="font-mono text-xs uppercase tracking-[0.12em] px-4 py-2 border border-line bg-paper hover:bg-paper-deep transition-colors text-ink"
+              className="font-mono text-xs uppercase tracking-[0.12em] px-4 py-2 border border-[var(--line)] bg-[var(--paper)] hover:bg-[var(--paper-deep)] transition-colors text-[var(--ink)]"
             >
               &larr; Return to Portfolio
             </a>
           </div>
         </header>
 
+        {/* 0. Four Curated Colour Palettes Section */}
+        <section aria-labelledby="palettes-title" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <Label className="block mb-1 text-[var(--ink-muted)]">01 / Curated Palettes (Part 2)</Label>
+              <Heading as="h2" className="text-2xl sm:text-3xl font-semibold text-[var(--ink)]">
+                Four Brand Exploration Identities
+              </Heading>
+            </div>
+            <div className="font-mono text-xs text-[var(--ink-muted)]">
+              Currently Active: <span className="text-[var(--primary)] font-bold">{activePalette.name}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {PALETTE_LIST.map((p) => {
+              const isSelected = paletteId === p.id;
+              return (
+                <div
+                  key={p.id}
+                  className={`p-4 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'border-[var(--primary)] ring-1 ring-[var(--primary)]'
+                      : 'border-white/10 hover:border-white/20'
+                  }`}
+                  style={{ backgroundColor: p.colors.surface }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className="w-6 h-6 rounded flex items-center justify-center font-mono text-xs font-bold"
+                      style={{ backgroundColor: p.colors.primary, color: p.colors.background }}
+                    >
+                      {p.letter}
+                    </span>
+                    <button
+                      onClick={() => setPaletteId(p.id as PaletteId)}
+                      className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider font-semibold transition-transform active:scale-95"
+                      style={{
+                        backgroundColor: isSelected ? p.colors.primary : 'transparent',
+                        color: isSelected ? p.colors.background : p.colors.primary,
+                        border: `1px solid ${p.colors.primary}`,
+                      }}
+                    >
+                      {isSelected ? '✓ Active' : 'Switch'}
+                    </button>
+                  </div>
+                  <h3 className="font-serif text-sm font-semibold text-white mb-1">{p.name}</h3>
+                  <p className="text-[11px] text-[#8B9BB4] line-clamp-2 mb-3">{p.visualIdentity}</p>
+                  
+                  <div className="flex gap-1 h-3 rounded overflow-hidden">
+                    <div style={{ backgroundColor: p.colors.background, flex: 2 }} title="Background" />
+                    <div style={{ backgroundColor: p.colors.surface, flex: 2 }} title="Surface" />
+                    <div style={{ backgroundColor: p.colors.primary, flex: 3 }} title="Primary" />
+                    <div style={{ backgroundColor: p.colors.secondary, flex: 2 }} title="Secondary" />
+                    <div style={{ backgroundColor: p.colors.accent, flex: 2 }} title="Accent" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* 1. Color Palette Swatches */}
-        <section aria-labelledby="tokens-title" className="space-y-8">
+        <section aria-labelledby="tokens-title" className="space-y-8 border-t border-[var(--line)] pt-12">
           <div>
-            <Label className="block mb-1 text-ink-muted">01 / Palette &amp; Contrast</Label>
-            <Heading as="h2" className="text-2xl sm:text-3xl font-semibold">
-              Restricted Chromatic System
+            <Label className="block mb-1 text-[var(--ink-muted)]">02 / Active Semantic Tokens</Label>
+            <Heading as="h2" className="text-2xl sm:text-3xl font-semibold text-[var(--ink)]">
+              Dynamic Token Bindings
             </Heading>
-            <Body muted className="mt-2 text-sm">
-              Only four colours plus ink-muted and line. No gradients, glows, or synthetic accents.
+            <Body muted className="mt-2 text-sm text-[var(--ink-muted)]">
+              All CSS custom properties mapped to active palette {activePalette.letter} ({activePalette.name}).
             </Body>
           </div>
 
@@ -107,22 +174,23 @@ export const StyleGuide: React.FC = () => {
             {swatches.map((s) => (
               <div
                 key={s.token}
-                className="border border-line bg-paper-deep p-4 flex flex-col justify-between"
+                className="border border-[var(--line)] bg-[var(--paper-deep)] p-4 flex flex-col justify-between rounded-xl"
               >
                 <div
-                  className={`w-full h-24 border ${s.borderClass} ${s.bgClass} flex items-center justify-center p-3`}
+                  style={s.bgStyle}
+                  className={`w-full h-24 border ${s.borderClass} flex items-center justify-center p-3 rounded-lg shadow-inner`}
                 >
-                  <span className={`font-mono text-xs uppercase tracking-wider font-medium ${s.textClass}`}>
+                  <span className={`font-mono text-xs uppercase tracking-wider font-semibold ${s.textClass}`}>
                     {s.hex}
                   </span>
                 </div>
-                <div className="mt-4 pt-3 border-t border-line">
+                <div className="mt-4 pt-3 border-t border-[var(--line)]">
                   <div className="flex items-center justify-between">
-                    <span className="font-display font-bold text-base text-ink">{s.name}</span>
-                    <code className="font-mono text-xs text-ink-muted">{s.token}</code>
+                    <span className="font-display font-bold text-base text-[var(--ink)]">{s.name}</span>
+                    <code className="font-mono text-xs text-[var(--ink-muted)]">{s.token}</code>
                   </div>
-                  <p className="mt-1 font-display text-xs text-ink-muted leading-relaxed">{s.role}</p>
-                  <div className="mt-2 font-mono text-[11px] uppercase tracking-wider text-oxblood">
+                  <p className="mt-1 font-display text-xs text-[var(--ink-muted)] leading-relaxed">{s.role}</p>
+                  <div className="mt-2 font-mono text-[11px] uppercase tracking-wider text-[var(--primary)]">
                     {s.contrast}
                   </div>
                 </div>

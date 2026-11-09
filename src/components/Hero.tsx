@@ -138,7 +138,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
       id="top"
       ref={heroRef}
       aria-label="Introduction"
-      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(6rem,calc(5rem+env(safe-area-inset-top)))] pb-[max(2rem,calc(1.5rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
+      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(6.5rem,calc(5.5rem+env(safe-area-inset-top)))] pb-[max(2.5rem,calc(2rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
     >
       {/* Top Section / Display Name */}
       <div className="w-full flex flex-col mt-auto mb-auto">
@@ -151,29 +151,29 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
             className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#0E131E]/90 border border-white/10 backdrop-blur-md"
           >
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-radar-pulse" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#00F2FE] font-bold">
+            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--primary)] font-bold">
               SYSTEM ONLINE // CSAI DEVELOPER
             </span>
             <span className="text-white/20 hidden sm:inline">|</span>
-            <span className="font-mono text-[10px] text-[#8E9BAE] hidden sm:inline uppercase">
+            <span className="font-mono text-[10px] text-[var(--ink-muted)] hidden sm:inline uppercase">
               NEWTON SCHOOL OF TECHNOLOGY
             </span>
           </motion.div>
         </div>
 
-        {/* Line 1: "LALIT" with SerifAccent italic on "A" in electric cyan */}
+        {/* Line 1: "LALIT" with SerifAccent italic on "A" in primary brand accent */}
         <div className="overflow-hidden">
           <motion.h1
             initial={{ y: prefersReduced ? 0 : '108%' }}
             animate={{ y: shouldReveal ? 0 : '108%' }}
             transition={revealTransition(0)}
-            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(3.8rem,18vw,14rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
+            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(3.5rem,14vw,11rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
           >
             <span data-var-letter="true" className="inline-block transition-[font-variation-settings]">
               L
             </span>
             <span
-              className="font-serif italic font-normal text-[var(--oxblood)] inline-block px-1 -mx-0.5"
+              className="font-serif italic font-normal text-[var(--primary)] inline-block px-1 -mx-0.5"
               style={{ fontFeatureSettings: '"swsh" 1' }}
             >
               A
@@ -191,13 +191,13 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
         </div>
 
         {/* Line 2: "CHOUDHARY" with variable font response */}
-        <div className="overflow-hidden -mt-1 sm:-mt-3">
+        <div className="overflow-hidden -mt-1 sm:-mt-2">
           <motion.div
             initial={{ y: prefersReduced ? 0 : '108%' }}
             animate={{ y: shouldReveal ? 0 : '108%' }}
             transition={revealTransition(1)}
             aria-hidden="true"
-            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(2.4rem,12.5vw,9.5rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
+            className="font-display font-bold tracking-[-0.04em] leading-[0.88] text-[var(--ink)] text-[clamp(2.4rem,9.8vw,7.6rem)] flex items-baseline whitespace-nowrap overflow-hidden select-none"
           >
             {'CHOUDHARY'.split('').map((char, index) => (
               <span
@@ -212,7 +212,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
         </div>
 
         {/* Tagline & Education Metadata */}
-        <div className="mt-8 sm:mt-12 pt-6 border-t border-[var(--line)] grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        <div className="mt-4 sm:mt-6 pt-4 border-t border-[var(--line)] grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
           {/* Tagline */}
           <div className="overflow-hidden md:col-span-7">
             <motion.p
@@ -233,7 +233,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
               <a
                 href="#projects"
                 data-cursor="link"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#00F2FE]/15 hover:bg-[#00F2FE]/25 border border-[#00F2FE]/50 text-[#00F2FE] font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(0,242,254,0.15)]"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)]/15 hover:bg-[var(--primary)]/25 border border-[var(--primary)]/50 text-[var(--primary)] font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_var(--primary-glow)]"
               >
                 <span>Selected Works</span>
                 <span aria-hidden="true">&darr;</span>
@@ -273,16 +273,21 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
           >
             <a
               href="#projects"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', '#projects');
+              }}
               data-cursor="link"
               aria-label="Scroll to work and projects"
-              className="group min-h-[44px] inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--ink-muted)] hover:text-[var(--oxblood)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)] py-2"
+              className="group min-h-[44px] inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--ink-muted)] hover:text-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] py-2 cursor-pointer"
             >
               <span>Scroll</span>
               <div
                 className="w-[1px] h-8 bg-[var(--line)] overflow-hidden relative"
                 aria-hidden="true"
               >
-                <div className="w-full h-full bg-[var(--oxblood)] animate-scroll-line" />
+                <div className="w-full h-full bg-[var(--primary)] animate-scroll-line" />
               </div>
             </a>
           </motion.div>

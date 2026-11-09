@@ -79,11 +79,11 @@ export const StripsBand: React.FC = () => {
         }}
         className="relative w-full flex flex-col items-center justify-center"
       >
-        {/* Strip 1: Electric Cyan, Obsidian text, -2deg rotation */}
+        {/* Strip 1: Primary Brand, Paper text, -2deg rotation */}
         <div
           data-cursor="on-dark"
           aria-hidden="true"
-          className="group relative z-10 w-[114vw] -ml-[7vw] -rotate-2 bg-[#00F2FE] text-[#08090D] py-2.5 sm:py-3 border-y border-[#00F2FE] overflow-hidden flex items-center cursor-default shadow-[0_0_20px_rgba(0,242,254,0.3)]"
+          className="group relative z-10 w-[114vw] -ml-[7vw] -rotate-2 bg-[var(--primary)] text-[var(--paper)] py-2.5 sm:py-3 border-y border-[var(--primary)] overflow-hidden flex items-center cursor-default shadow-[0_0_20px_var(--primary-glow)] transition-colors duration-500"
         >
           <div
             style={marqueeStyle}
@@ -98,11 +98,11 @@ export const StripsBand: React.FC = () => {
           </div>
         </div>
 
-        {/* Strip 2: Deep Obsidian Slate, Electric Cyan text, +1.5deg rotation, crossing Strip 1 */}
+        {/* Strip 2: Deep Surface, Primary text, +1.5deg rotation, crossing Strip 1 */}
         <div
           data-cursor="on-dark"
           aria-hidden="true"
-          className="group relative z-20 w-[114vw] -ml-[7vw] rotate-[1.5deg] -mt-3.5 sm:-mt-4 bg-[#0E131E] text-[#00F2FE] py-2.5 sm:py-3 border-y border-[#00F2FE]/40 overflow-hidden flex items-center cursor-default backdrop-blur-md"
+          className="group relative z-20 w-[114vw] -ml-[7vw] rotate-[1.5deg] -mt-3.5 sm:-mt-4 bg-[var(--paper-deep)] text-[var(--primary)] py-2.5 sm:py-3 border-y border-[var(--border-bright)] overflow-hidden flex items-center cursor-default backdrop-blur-md transition-colors duration-500"
         >
           <div
             style={marqueeStyle}

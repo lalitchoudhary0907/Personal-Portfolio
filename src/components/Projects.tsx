@@ -58,7 +58,7 @@ export const Projects: React.FC = () => {
         </Heading>
       </div>
 
-      {/* Floating Preview Slot (Desktop fine pointer only) */}
+      {/* Floating Preview Slot (Desktop fine pointer only, 16px radius, no shadow) */}
       {isDesktopFine && !prefersReduced && (
         <motion.div
           aria-hidden="true"
@@ -69,15 +69,15 @@ export const Projects: React.FC = () => {
             scale: hoveredIndex !== null ? 1 : 0.85,
           }}
           transition={{ duration: 0.2 }}
-          className="pointer-events-none fixed top-0 left-0 z-30 w-52 h-36 bg-[var(--paper-deep)] border border-[var(--line)] flex flex-col items-center justify-center overflow-hidden"
+          className="pointer-events-none fixed top-0 left-0 z-30 w-56 h-36 bg-[#003734] border border-white/10 rounded-[16px] flex flex-col items-center justify-center overflow-hidden"
         >
           {activeProject && (
             <div className="flex flex-col items-center justify-center p-4 text-center">
-              <span className="font-display font-extrabold text-5xl text-[var(--oxblood)]/40 tracking-tighter">
+              <span className="font-display font-medium text-5xl text-[#cbfffc]/40 tracking-tight">
                 {activeProject.name.charAt(0)}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)] mt-2">
-                Preview Slot
+              <span className="font-display text-[11px] uppercase tracking-[0.12em] text-[#edfffe] mt-2">
+                Auros Deep Preview
               </span>
             </div>
           )}
@@ -139,21 +139,21 @@ export const Projects: React.FC = () => {
 
                   <span
                     aria-hidden="true"
-                    className="font-mono text-base sm:text-xl text-[var(--ink-muted)] group-hover:text-[var(--oxblood)] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200"
+                    className="w-8 h-8 rounded-[6px] bg-[rgba(3,81,75,0.5)] group-hover:bg-[#00827c] text-white flex items-center justify-center font-mono text-sm transition-all duration-200 shrink-0"
                   >
-                    &nearr;
+                    ↗
                   </span>
                 </div>
               </div>
 
-              {/* Mobile Inline Preview Slot */}
+              {/* Mobile Inline Preview Slot (16px radius, Kelp surface) */}
               <div aria-hidden="true" className="md:hidden mt-4 pl-12">
-                <div className="w-36 h-24 bg-[var(--paper-deep)] border border-[var(--line)] flex flex-col items-center justify-center">
-                  <span className="font-display font-black text-3xl text-[var(--oxblood)]/30">
+                <div className="w-40 h-24 bg-[#003734] border border-white/10 rounded-[16px] flex flex-col items-center justify-center">
+                  <span className="font-display font-medium text-3xl text-[#cbfffc]/40">
                     {project.name.charAt(0)}
                   </span>
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--ink-muted)] mt-1">
-                    Preview
+                  <span className="font-display text-[10px] uppercase tracking-[0.1em] text-[#edfffe] mt-1">
+                    Auros Preview
                   </span>
                 </div>
               </div>

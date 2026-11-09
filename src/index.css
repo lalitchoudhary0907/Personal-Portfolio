@@ -9,10 +9,17 @@
 @theme {
   --color-paper: var(--paper);
   --color-paper-deep: var(--paper-deep);
+  --color-paper-card: var(--paper-card);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
   --color-oxblood: var(--oxblood);
   --color-line: var(--line);
+  --color-line-bright: var(--line-bright);
+  --color-line-accent: var(--line-accent);
 
   --font-display: var(--font-display);
   --font-serif: var(--font-serif);
@@ -30,22 +37,23 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Global Selection: Electric Cyan on Dark Obsidian */
+/* Global Selection based on active theme */
 ::selection {
-  background-color: #00F2FE;
-  color: #08090D;
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 ::-moz-selection {
-  background-color: #00F2FE;
-  color: #08090D;
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
 }
 
-/* Accessibility: Visible Focus Ring (2px electric cyan, 3px offset) */
+/* Accessibility: Visible Focus Ring based on active theme */
 *:focus-visible {
-  outline: 2px solid #00F2FE;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 

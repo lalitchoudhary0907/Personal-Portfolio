@@ -101,7 +101,7 @@ export const Achievements: React.FC = () => {
                       height={160}
                       loading="lazy"
                       decoding="async"
-                      className="w-56 sm:w-64 h-32 sm:h-36 object-cover border border-white/10 group-hover:border-[#00F2FE]/60 bg-[#0E131E] transition-colors shadow-[0_0_20px_rgba(0,0,0,0.6)]"
+                      className="w-56 sm:w-64 h-32 sm:h-36 object-cover border border-white/10 group-hover:border-[var(--primary)]/60 bg-[var(--paper-deep)] transition-colors shadow-[0_0_20px_rgba(0,0,0,0.6)]"
                     />
                   </Reveal>
 
@@ -112,10 +112,10 @@ export const Achievements: React.FC = () => {
                       rel="noopener noreferrer"
                       data-cursor="link"
                       aria-label={`Open official ${item.title} certificate PDF in new tab`}
-                      className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-[var(--oxblood)] hover:underline outline-none focus-visible:ring-2 focus-visible:ring-[var(--oxblood)]"
+                      className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-[var(--primary)] hover:underline outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
                       <span>View Full Certificate</span>
-                      <span aria-hidden="true">&nearr;</span>
+                      <span aria-hidden="true">↗</span>
                     </a>
                   )}
                 </div>

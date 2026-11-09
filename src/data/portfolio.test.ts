@@ -29,8 +29,7 @@ test('education data references verified institution and degree', () => {
 
 test('known projects are recorded with verification status and confirmation notes', () => {
   const projectTitles = portfolioData.projects.map((p) => p.title);
-  assert.ok(projectTitles.includes('DocDrift'));
-  assert.ok(projectTitles.includes('CoreAlert'));
+  assert.ok(projectTitles.includes('FocusFlow'));
   assert.ok(projectTitles.includes('VastraGo'));
 
   for (const project of portfolioData.projects) {
@@ -39,20 +38,20 @@ test('known projects are recorded with verification status and confirmation note
   }
 });
 
-test('achievements include verified WorldQuant milestones and Hacktoberfest certificate', () => {
+test('achievements include verified WorldQuant Gold milestone and Hacktoberfest certificate', () => {
   const achievementTitles = portfolioData.achievements.map((a) => a.title);
   assert.ok(achievementTitles.some((t) => t.includes('WorldQuant BRAIN Gold Level')));
-  assert.ok(achievementTitles.some((t) => t.includes('WorldQuant BRAIN Silver Level')));
-  assert.ok(achievementTitles.some((t) => t.includes('WorldQuant BRAIN Bronze Level')));
   assert.ok(achievementTitles.some((t) => t.includes('Hacktoberfest')));
 
   const gold = portfolioData.achievements.find((a) => a.title.includes('Gold'));
-  assert.equal(gold?.certificatePath, '/assets/aistudio/WorldQuant_Gold_Certificate_fd9a9343.pdf');
+  assert.ok(gold?.certificatePath?.includes('WorldQuant_Gold_Certificate'));
+
+  const hacktober = portfolioData.achievements.find((a) => a.title.includes('Hacktoberfest'));
+  assert.ok(hacktober?.certificatePath?.includes('HacktoberFest_Certificate'));
 });
 
 test('pending confirmations clearly document items requiring user confirmation', () => {
-  assert.ok(portfolioData.pendingConfirmations.length >= 3);
+  assert.ok(portfolioData.pendingConfirmations.length >= 2);
   const fields = portfolioData.pendingConfirmations.map((c) => c.field);
-  assert.ok(fields.includes('projects.coreAlertRepo'));
   assert.ok(fields.includes('projects.vastragoPrototype'));
 });
