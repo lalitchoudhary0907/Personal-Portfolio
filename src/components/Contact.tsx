@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { profile } from '../data/profile';
 import { useMagnetic } from '../hooks/useMagnetic';
@@ -12,6 +12,7 @@ import { SectionLabelCounter } from './Reveal';
 
 export const Contact: React.FC = () => {
   const [copied, setCopied] = useState(false);
+  const containerRef = useRef<HTMLElement>(null);
 
   const emailMagnetic = useMagnetic<HTMLAnchorElement>({
     radius: 90,
@@ -24,6 +25,25 @@ export const Contact: React.FC = () => {
     pullFactor: 0.25,
     maxOffset: 8,
   });
+
+  const githubMagnetic = useMagnetic<HTMLAnchorElement>({
+    radius: 60,
+    pullFactor: 0.22,
+    maxOffset: 6,
+  });
+
+  const linkedinMagnetic = useMagnetic<HTMLAnchorElement>({
+    radius: 60,
+    pullFactor: 0.22,
+    maxOffset: 6,
+  });
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    containerRef.current.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    containerRef.current.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  };
 
   const handleCopyEmail = async () => {
     try {
@@ -39,10 +59,20 @@ export const Contact: React.FC = () => {
   return (
     <section
       id="contact"
+      ref={containerRef}
+      onPointerMove={handlePointerMove}
       data-cursor="on-dark"
       aria-labelledby="contact-heading"
-      className="relative w-full bg-[var(--paper-deep)] text-[var(--ink)] py-[12vh] px-6 sm:px-10 border-t border-[var(--line)] select-none"
+      className="group relative w-full bg-[var(--paper-deep)] text-[var(--ink)] py-[12vh] px-6 sm:px-10 border-t border-[var(--line)] select-none overflow-hidden"
     >
+      {/* Pointer-Reactive Surface Lighting */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(450px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), var(--primary-glow) 0%, transparent 80%)`,
+        }}
+      />
       <div className="max-w-7xl mx-auto">
         {/* Section Header with drawing rule line */}
         <div className="mb-12 sm:mb-16">
@@ -108,13 +138,16 @@ export const Contact: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-6 sm:gap-8 font-mono text-xs uppercase tracking-widest">
             {profile.contact.github && (
-              <a
+              <motion.a
+                ref={githubMagnetic.ref}
+                style={githubMagnetic.style}
                 href={profile.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="link"
+                data-cursor-label="GITHUB"
                 aria-label="GitHub profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200 cursor-pointer"
               >
                 <span>GitHub</span>
                 <span
@@ -123,17 +156,20 @@ export const Contact: React.FC = () => {
                 >
                   ↗
                 </span>
-              </a>
+              </motion.a>
             )}
 
             {profile.contact.linkedin && (
-              <a
+              <motion.a
+                ref={linkedinMagnetic.ref}
+                style={linkedinMagnetic.style}
                 href={profile.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="link"
+                data-cursor-label="LINKEDIN"
                 aria-label="LinkedIn profile (opens in new window)"
-                className="group min-h-[44px] inline-flex items-center gap-1.5 px-2 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200"
+                className="group min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 text-[var(--ink)] hover:text-[var(--primary)] transition-colors duration-200 cursor-pointer"
               >
                 <span>LinkedIn</span>
                 <span
@@ -142,7 +178,7 @@ export const Contact: React.FC = () => {
                 >
                   ↗
                 </span>
-              </a>
+              </motion.a>
             )}
           </div>
         </div>

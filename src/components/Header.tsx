@@ -44,6 +44,7 @@ const MagneticNavLink: React.FC<{
       href={href}
       onClick={handleClick}
       data-cursor="link"
+      data-cursor-label={label.toUpperCase()}
       className={`group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] transition-colors inline-flex items-center gap-1.5 ${
         isActive ? 'text-[var(--primary)] font-semibold' : 'text-[var(--ink)] hover:text-[var(--primary)]'
       }`}

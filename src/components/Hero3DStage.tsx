@@ -10,6 +10,8 @@ import { useTheme } from '../context/ThemeContext';
 import { ComputationalSculpture } from '../webgl/sculpture/ComputationalSculpture';
 import { webglCoordinator, detectSoftwareGl } from '../webgl/webglCoordinator';
 import { scrollBus } from '../utils/scrollBus';
+import { useCursor } from '../context/CursorContext';
+import { usePointerGlow } from '../hooks/usePointerGlow';
 
 interface Hero3DStageProps {
   className?: string;
@@ -21,6 +23,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
 
   const prefersReduced = usePrefersReducedMotion();
   const { activePalette } = useTheme();
+  const { setCursorVariant, resetCursor } = useCursor();
 
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -219,13 +222,21 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
     interactionRef.current.isDragging = true;
     interactionRef.current.dragStart = { x: e.clientX, y: e.clientY };
     setIsDragging(true);
+    setCursorVariant('drag', 'ROTATING');
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+
+    // Direct CSS custom properties for hardware accelerated pointer lighting
+    containerRef.current.style.setProperty('--mouse-x', `${px}px`);
+    containerRef.current.style.setProperty('--mouse-y', `${py}px`);
+
+    const nx = (px / rect.width) * 2 - 1;
+    const ny = -((py / rect.height) * 2 - 1);
 
     interactionRef.current.pointer.x = Math.max(-1, Math.min(1, nx));
     interactionRef.current.pointer.y = Math.max(-1, Math.min(1, ny));
@@ -249,6 +260,7 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
     }
     interactionRef.current.isDragging = false;
     setIsDragging(false);
+    setCursorVariant('3d-scene', 'ROTATE');
   };
 
   const handleDoubleClick = useCallback(() => {
@@ -262,20 +274,34 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
   return (
     <div
       ref={containerRef}
-      onPointerEnter={() => setIsHovered(true)}
+      onPointerEnter={() => {
+        setIsHovered(true);
+        setCursorVariant(isDragging ? 'drag' : '3d-scene', isDragging ? 'ROTATING' : 'ROTATE');
+      }}
       onPointerLeave={() => {
         setIsHovered(false);
         interactionRef.current.pointer = { x: 0, y: 0 };
+        resetCursor();
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onDoubleClick={handleDoubleClick}
-      className={`relative w-full rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/90 backdrop-blur-xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300 hover:border-[var(--primary)] ${className}`}
+      data-cursor={isDragging ? 'drag' : '3d-scene'}
+      data-cursor-label={isDragging ? 'ROTATING' : 'ROTATE'}
+      className={`group relative w-full rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/90 backdrop-blur-xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300 hover:border-[var(--primary)] ${className}`}
       aria-label="Interactive 3D Computational Sculpture: Refractive Glass Monolith with Neural Lattice. Drag to rotate, double click to reset."
       role="region"
     >
+      {/* Pointer-Reactive Responsive Surface Lighting */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+        style={{
+          background: `radial-gradient(380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), var(--primary-glow) 0%, transparent 80%)`,
+        }}
+      />
       {/* Ambient Glow Aura */}
       <div
         aria-hidden="true"

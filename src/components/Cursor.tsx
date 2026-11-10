@@ -14,7 +14,11 @@ interface CursorProps {
 
 export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
   const prefersReduced = usePrefersReducedMotion();
-  const { variant: contextVariant, isOnDark: contextIsOnDark, label: contextLabel } = useCursor();
+  const {
+    variant: contextVariant,
+    isOnDark: contextIsOnDark,
+    label: contextLabel,
+  } = useCursor();
 
   const [hasFinePointer, setHasFinePointer] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -22,19 +26,19 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
   const [localIsOnDark, setLocalIsOnDark] = useState(false);
   const [localLabel, setLocalLabel] = useState<string | undefined>(undefined);
 
-  // Position motion values (GPU translate3d only, no React re-render per mousemove)
+  // Position motion values (GPU translate3d only, zero React re-render per mousemove)
   const dotX = useMotionValue(-100);
   const dotY = useMotionValue(-100);
 
-  // 36px ring follows with spring lag (stiffness 220, damping 28)
+  // Follower ring follows with tuned spring inertia (stiffness 240, damping 26)
   // Direct follow under prefers-reduced-motion
-  const springX = useSpring(dotX, { stiffness: 220, damping: 28 });
-  const springY = useSpring(dotY, { stiffness: 220, damping: 28 });
+  const springX = useSpring(dotX, { stiffness: 240, damping: 26, mass: 0.75 });
+  const springY = useSpring(dotY, { stiffness: 240, damping: 26, mass: 0.75 });
 
   const ringX = prefersReduced ? dotX : springX;
   const ringY = prefersReduced ? dotY : springY;
 
-  // Active state prioritized between context and element-delegated state
+  // Active state prioritized between imperative context and element-delegated state
   const activeVariant = contextVariant !== 'default' ? contextVariant : localVariant;
   const activeIsOnDark = contextIsOnDark || localIsOnDark;
   const activeLabel = contextLabel || localLabel;
@@ -50,6 +54,8 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
       setHasFinePointer(e.matches);
       if (!e.matches) {
         document.documentElement.classList.remove('has-custom-cursor');
+      } else {
+        document.documentElement.classList.add('has-custom-cursor');
       }
     };
 
@@ -108,14 +114,42 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
       );
       setLocalIsOnDark(isDark);
 
-      // Check context data-cursor attributes
-      const projectEl = target.closest('[data-cursor="project"]');
-      if (projectEl) {
-        setLocalVariant('project');
-        setLocalLabel('VIEW');
+      // Check disabled interactive elements
+      const disabledEl = target.closest('[disabled], [aria-disabled="true"], [data-cursor="disabled"]');
+      if (disabledEl) {
+        setLocalVariant('disabled');
+        setLocalLabel(undefined);
         return;
       }
 
+      // Check 3D scene stage
+      const sceneEl = target.closest('[data-cursor="3d-scene"]');
+      if (sceneEl) {
+        setLocalVariant('3d-scene');
+        const customLabel = sceneEl.getAttribute('data-cursor-label') || 'ROTATE';
+        setLocalLabel(customLabel);
+        return;
+      }
+
+      // Check drag surfaces
+      const dragEl = target.closest('[data-cursor="drag"]');
+      if (dragEl) {
+        setLocalVariant('drag');
+        const customLabel = dragEl.getAttribute('data-cursor-label') || 'DRAG';
+        setLocalLabel(customLabel);
+        return;
+      }
+
+      // Check project cards and previews
+      const projectEl = target.closest('[data-cursor="project"]');
+      if (projectEl) {
+        setLocalVariant('project');
+        const customLabel = projectEl.getAttribute('data-cursor-label') || 'VIEW';
+        setLocalLabel(customLabel);
+        return;
+      }
+
+      // Check text-focused areas
       const textEl = target.closest('[data-cursor="text"]');
       if (textEl) {
         setLocalVariant('text');
@@ -123,10 +157,12 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
         return;
       }
 
+      // Check general links and buttons
       const linkEl = target.closest('a, button, [role="button"], [data-cursor="link"]');
       if (linkEl) {
         setLocalVariant('link');
-        setLocalLabel(undefined);
+        const customLabel = linkEl.getAttribute('data-cursor-label') || undefined;
+        setLocalLabel(customLabel);
         return;
       }
 
@@ -163,27 +199,50 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
     return null;
   }
 
-  // Ring dimension & style matrix
-  let ringSize = 'w-[36px] h-[36px]';
+  // Ring dimension & style matrix based on active contextual state
+  let ringSize = 'w-[32px] h-[32px]';
   let ringBg = 'bg-transparent';
-  let ringBorder = activeIsOnDark ? 'border-[var(--paper)]' : 'border-[var(--ink)]';
+  let ringBorder = activeIsOnDark ? 'border-[var(--paper)]/50' : 'border-[var(--ink)]/40';
   let isDotHidden = false;
+  let ringRadius = 'rounded-full';
 
   switch (activeVariant) {
     case 'link':
-      ringSize = 'w-[64px] h-[64px]';
-      ringBg = 'bg-[var(--oxblood)]/[0.12]';
-      ringBorder = activeIsOnDark ? 'border-[var(--paper)]' : 'border-[var(--oxblood)]';
+      ringSize = activeLabel ? 'w-[60px] h-[60px]' : 'w-[52px] h-[52px]';
+      ringBg = activeLabel ? 'bg-[var(--paper-deep)]/85 backdrop-blur-sm' : 'bg-[var(--primary)]/[0.12]';
+      ringBorder = 'border-[var(--primary)]';
+      if (activeLabel) isDotHidden = true;
       break;
     case 'project':
-      ringSize = 'w-[88px] h-[88px]';
-      ringBg = 'bg-[var(--oxblood)]';
-      ringBorder = 'border-transparent';
+      ringSize = 'w-[84px] h-[84px]';
+      ringBg = 'bg-[var(--primary)]';
+      ringBorder = 'border-transparent shadow-[0_0_24px_var(--primary-glow)]';
+      isDotHidden = true;
+      break;
+    case '3d-scene':
+      ringSize = 'w-[78px] h-[78px]';
+      ringBg = 'bg-[var(--paper-deep)]/90 backdrop-blur-md shadow-lg';
+      ringBorder = 'border-[var(--primary)]';
+      isDotHidden = true;
+      break;
+    case 'drag':
+      ringSize = 'w-[72px] h-[40px]';
+      ringRadius = 'rounded-2xl';
+      ringBg = 'bg-[var(--paper-deep)]/90 backdrop-blur-md shadow-lg';
+      ringBorder = 'border-[var(--accent)]';
       isDotHidden = true;
       break;
     case 'text':
-      ringSize = 'w-[6px] h-[6px]';
-      ringBorder = activeIsOnDark ? 'border-[var(--paper)]' : 'border-[var(--ink)]';
+      ringSize = 'w-[2px] h-[20px]';
+      ringRadius = 'rounded-none';
+      ringBg = 'bg-[var(--primary)]';
+      ringBorder = 'border-transparent';
+      isDotHidden = true;
+      break;
+    case 'disabled':
+      ringSize = 'w-[28px] h-[28px]';
+      ringBg = 'bg-transparent';
+      ringBorder = 'border-dashed border-[var(--ink-muted)]/60';
       break;
     case 'hidden':
       ringSize = 'w-0 h-0';
@@ -191,11 +250,11 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
       break;
     case 'default':
     default:
-      ringSize = 'w-[36px] h-[36px]';
+      ringSize = 'w-[32px] h-[32px]';
       break;
   }
 
-  const dotColor = activeIsOnDark ? 'bg-[var(--paper)]' : 'bg-[var(--ink)]';
+  const dotColor = activeIsOnDark ? 'bg-[var(--paper)]' : 'bg-[var(--primary)]';
 
   return (
     <div
@@ -204,29 +263,56 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
         isVisible && activeVariant !== 'hidden' ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* 36px/64px/88px Ring (spring-lagged) */}
+      {/* Context-Aware Follower Ring (spring-interpolated) */}
       <motion.div
         style={{
           x: ringX,
           y: ringY,
         }}
-        className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border flex items-center justify-center transition-[width,height,background-color,border-color] duration-200 ease-out ${ringSize} ${ringBg} ${ringBorder}`}
+        className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 border flex items-center justify-center transition-[width,height,border-radius,background-color,border-color] duration-250 ease-out ${ringRadius} ${ringSize} ${ringBg} ${ringBorder}`}
       >
+        {activeVariant === 'link' && activeLabel && (
+          <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[var(--primary)] font-bold select-none text-center px-1">
+            {activeLabel}
+          </span>
+        )}
+
         {activeVariant === 'project' && (
-          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--paper)] font-semibold select-none">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--paper)] font-bold select-none">
             {activeLabel || 'VIEW'}
+          </span>
+        )}
+
+        {activeVariant === '3d-scene' && (
+          <div className="flex flex-col items-center justify-center font-mono text-[8px] uppercase tracking-[0.14em] text-[var(--primary)] font-bold select-none leading-tight text-center">
+            <span className="text-[12px] leading-none mb-0.5">↺</span>
+            <span>{activeLabel || 'ROTATE'}</span>
+          </div>
+        )}
+
+        {activeVariant === 'drag' && (
+          <div className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] font-bold select-none">
+            <span>←</span>
+            <span>{activeLabel || 'DRAG'}</span>
+            <span>→</span>
+          </div>
+        )}
+
+        {activeVariant === 'disabled' && (
+          <span className="font-mono text-[11px] text-[var(--ink-muted)] select-none">
+            ✕
           </span>
         )}
       </motion.div>
 
-      {/* 8px Dot (direct pointer follow) */}
+      {/* 7px Precision Dot (immediate pointer follow) */}
       {!isDotHidden && (
         <motion.div
           style={{
             x: dotX,
             y: dotY,
           }}
-          className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${dotColor} transition-colors duration-150`}
+          className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full ${dotColor} shadow-[0_0_8px_var(--primary-glow)] transition-colors duration-150`}
         />
       )}
     </div>

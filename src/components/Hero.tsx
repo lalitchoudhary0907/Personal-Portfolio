@@ -347,6 +347,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
                 window.history.pushState(null, '', '#projects');
               }}
               data-cursor="link"
+              data-cursor-label="EXPLORE"
               className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider font-semibold transition-all hover:opacity-95 active:scale-95 shadow-[0_0_24px_var(--primary-glow)]"
             >
               <span>Explore Selected Works</span>
@@ -363,6 +364,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
                 window.history.pushState(null, '', '#contact');
               }}
               data-cursor="link"
+              data-cursor-label="CONTACT"
               className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--paper-deep)] hover:bg-[var(--paper-card)] border border-[var(--border-bright)] hover:border-[var(--primary)] text-[var(--ink)] font-mono text-xs uppercase tracking-wider transition-all"
             >
               <span>Initiate Dialogue</span>
@@ -379,6 +381,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
                 window.history.pushState(null, '', '#achievements');
               }}
               data-cursor="link"
+              data-cursor-label="HONOR"
               className="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 text-[var(--secondary)] hover:text-[var(--accent)] font-mono text-xs transition-colors"
             >
               <span className="text-[var(--accent)]" aria-hidden="true">✦</span>

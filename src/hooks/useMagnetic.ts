@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMotionValue, useSpring } from 'motion/react';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
@@ -14,26 +14,29 @@ interface MagneticOptions {
 }
 
 export function useMagnetic<T extends HTMLElement = HTMLAnchorElement>({
-  radius = 80,
-  pullFactor = 0.25,
+  radius = 70,
+  pullFactor = 0.28,
   maxOffset = 8,
 }: MagneticOptions = {}) {
   const ref = useRef<T>(null);
   const prefersReduced = usePrefersReducedMotion();
+  const [isHovered, setIsHovered] = useState(false);
 
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
 
-  const springX = useSpring(rawX, { stiffness: 220, damping: 28 });
-  const springY = useSpring(rawY, { stiffness: 220, damping: 28 });
+  // Tuned spring physics: crisp attraction, smooth settle, zero oscillation overshoot
+  const springX = useSpring(rawX, { stiffness: 240, damping: 24, mass: 0.8 });
+  const springY = useSpring(rawY, { stiffness: 240, damping: 24, mass: 0.8 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el || prefersReduced) return;
 
-    // Check pointer capabilities
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     if (!hasFinePointer) return;
+
+    let isNear = false;
 
     const handlePointerMove = (e: PointerEvent) => {
       const rect = el.getBoundingClientRect();
@@ -45,30 +48,56 @@ export function useMagnetic<T extends HTMLElement = HTMLAnchorElement>({
       const distance = Math.hypot(deltaX, deltaY);
 
       if (distance <= radius) {
-        // Calculate pull with clamp
-        const pullX = deltaX * pullFactor;
-        const pullY = deltaY * pullFactor;
+        if (!isNear) {
+          isNear = true;
+          setIsHovered(true);
+        }
+
+        // Smooth non-linear gravitational decay: strongest near center, soft at perimeter
+        const normalized = 1 - distance / radius;
+        const decay = Math.pow(normalized, 1.4);
+
+        const pullX = deltaX * pullFactor * decay;
+        const pullY = deltaY * pullFactor * decay;
+
         const clampedX = Math.max(-maxOffset, Math.min(maxOffset, pullX));
         const clampedY = Math.max(-maxOffset, Math.min(maxOffset, pullY));
 
         rawX.set(clampedX);
         rawY.set(clampedY);
-      } else {
+      } else if (isNear) {
+        isNear = false;
+        setIsHovered(false);
         rawX.set(0);
         rawY.set(0);
       }
     };
 
     const handlePointerLeave = () => {
+      isNear = false;
+      setIsHovered(false);
       rawX.set(0);
       rawY.set(0);
     };
 
+    const handleScroll = () => {
+      if (isNear) {
+        isNear = false;
+        setIsHovered(false);
+        rawX.set(0);
+        rawY.set(0);
+      }
+    };
+
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('blur', handlePointerLeave);
     el.addEventListener('pointerleave', handlePointerLeave, { passive: true });
 
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('blur', handlePointerLeave);
       el.removeEventListener('pointerleave', handlePointerLeave);
       rawX.set(0);
       rawY.set(0);
@@ -77,6 +106,7 @@ export function useMagnetic<T extends HTMLElement = HTMLAnchorElement>({
 
   return {
     ref,
+    isHovered,
     style: prefersReduced ? {} : { x: springX, y: springY },
   };
 }

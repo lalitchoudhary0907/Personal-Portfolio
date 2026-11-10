@@ -111,6 +111,7 @@ export const Achievements: React.FC = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       data-cursor="link"
+                      data-cursor-label="CERT"
                       aria-label={`Open official ${item.title} certificate PDF in new tab`}
                       className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-[var(--primary)] hover:underline outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
