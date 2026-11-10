@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { portfolioData } from '../data/portfolio';
 import { Heading, SerifAccent, Kicker } from './Typography';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { PortraitFrame } from './PortraitFrame';
 
 export const About: React.FC = () => {
   const prefersReduced = usePrefersReducedMotion();
@@ -39,7 +40,7 @@ export const About: React.FC = () => {
             transition={{ duration: prefersReduced ? 0.2 : 0.7, ease: [0.76, 0, 0.24, 1] }}
             className="font-display text-[clamp(1.2rem,2.1vw,1.65rem)] text-[var(--ink)] font-normal leading-[1.55]"
           >
-            Pursuing a BTech in Computer Science &amp; Artificial Intelligence at Newton School of Technology (Rishihood University). I bridge the analytical rigor of quantitative modeling with modern software engineering craft.
+            First-year BTech student in Computer Science &amp; Artificial Intelligence at Newton School of Technology (Rishihood University). Focused on software engineering fundamentals, practical web applications, and quantitative problem-solving.
           </motion.p>
 
           <motion.div
@@ -84,8 +85,35 @@ export const About: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Right Column (Cols 8-12): Academic & Location Dossier Card */}
-        <div className="lg:col-span-5">
+        {/* Right Column (Cols 8-12): Academic & Location Dossier Card with Portrait Presentation */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Authentic Portrait Card Presentation in About */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: prefersReduced ? 0.2 : 0.75, ease: [0.76, 0, 0.24, 1] }}
+            className="flex items-center gap-5 p-5 rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/90 backdrop-blur-xl shadow-xl"
+          >
+            <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+              <PortraitFrame size="about" priority={false} className="w-full h-full" />
+            </div>
+            <div className="space-y-1">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--secondary)] font-semibold">
+                Creator Profile
+              </span>
+              <h3 className="font-display font-bold text-lg text-[var(--ink)]">
+                Lalit Choudhary
+              </h3>
+              <p className="font-mono text-xs text-[var(--primary)]">
+                First-Year B.Tech CS &amp; AI
+              </p>
+              <p className="font-mono text-[11px] text-[var(--ink-muted)]">
+                Newton School of Technology
+              </p>
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
