@@ -189,14 +189,16 @@ export const PortraitFrame: React.FC<PortraitFrameProps> = ({
             className="absolute top-0 right-0 w-4 h-4 border-b border-l border-[var(--primary)]/60 bg-[var(--paper)]"
           />
 
-          {/* Bottom Left Corner Micro Coordinate Badge */}
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-[var(--ink)]/80 backdrop-blur-md bg-[var(--paper-deep)]/80 px-2 py-1 border border-white/10 rounded-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
-              <span>AUTHENTIC PORTRAIT</span>
-            </span>
-            <span className="text-[var(--secondary)]">LC // NST.CSAI</span>
-          </div>
+          {/* Bottom Left Corner Micro Coordinate Badge (Hero Large View only) */}
+          {size === 'hero' && (
+            <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-[var(--ink)]/80 backdrop-blur-md bg-[var(--paper-deep)]/80 px-2 py-1 border border-white/10 rounded-sm">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
+                <span>AUTHENTIC PORTRAIT</span>
+              </span>
+              <span className="text-[var(--secondary)]">LC // NST.CSAI</span>
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

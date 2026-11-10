@@ -6,8 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
-const STORAGE_KEY = 'lc_tech_intro_seen_v2';
-const ONE_HOUR_MS = 60 * 60 * 1000;
+const STORAGE_KEY = 'lc_portfolio_intro_seen_v3';
 
 export type IntroVariant = 'full' | 'reduced';
 
@@ -15,7 +14,7 @@ export interface UseIntroReturn {
   isIntroActive: boolean;
   isSplitting: boolean;
   introDone: boolean;
-  phase: number; // 1: Boot (0-1.8s), 2: Monogram (1.8-3.8s), 3: Nodes (3.8-5.4s), 4: Warp (5.4-6.2s)
+  phase: number; // 1: Boot (0-0.6s), 2: Monogram & Telemetry (0.6-1.3s), 3: Warp & Split (1.3-1.8s), 4: Complete (2.0s)
   progress: number; // 0 to 100
   variant: IntroVariant;
   skipIntro: () => void;
@@ -30,11 +29,14 @@ export function useIntro(onIntroComplete?: () => void): UseIntroReturn {
     return 'full';
   });
 
-  const [isIntroActive, setIsIntroActive] = useState(true);
+  // Check if user has already seen the intro in this session
+  const hasSeenInSession = typeof window !== 'undefined' && Boolean(sessionStorage.getItem(STORAGE_KEY));
+
+  const [isIntroActive, setIsIntroActive] = useState(() => !hasSeenInSession && !prefersReduced);
   const [isSplitting, setIsSplitting] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
-  const [phase, setPhase] = useState(1);
-  const [progress, setProgress] = useState(0);
+  const [introDone, setIntroDone] = useState(() => hasSeenInSession || prefersReduced);
+  const [phase, setPhase] = useState(() => (hasSeenInSession || prefersReduced ? 4 : 1));
+  const [progress, setProgress] = useState(() => (hasSeenInSession || prefersReduced ? 100 : 0));
 
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const intervalsRef = useRef<NodeJS.Timeout[]>([]);
@@ -84,7 +86,7 @@ export function useIntro(onIntroComplete?: () => void): UseIntroReturn {
     setPhase(4);
     const splitTimer = setTimeout(() => {
       finishIntro();
-    }, 600);
+    }, 350);
     timersRef.current.push(splitTimer);
   }, [isIntroActive, isSplitting, introDone, variant, finishIntro, clearAllTimers]);
 
@@ -101,14 +103,14 @@ export function useIntro(onIntroComplete?: () => void): UseIntroReturn {
     if (variant === 'reduced') {
       const t = setTimeout(() => {
         finishIntro();
-      }, 500);
+      }, 300);
       timersRef.current.push(t);
       return;
     }
 
-    // Progress counter ticker: 0 -> 100% over 5.4s
+    // Progress counter ticker: 0 -> 100% over 1.6s
     const startTime = performance.now();
-    const duration = 5400;
+    const duration = 1600;
 
     const progressInterval = setInterval(() => {
       const elapsed = performance.now() - startTime;
@@ -117,44 +119,41 @@ export function useIntro(onIntroComplete?: () => void): UseIntroReturn {
       if (rawPct >= 100) {
         clearInterval(progressInterval);
       }
-    }, 50);
+    }, 35);
     intervalsRef.current.push(progressInterval);
 
-    // Timeline phases (Total ≈ 6.2 seconds)
-    // 0.0s - 1.8s: Phase 1 (Kernel Boot)
-    // 1.8s: Phase 2 (Monogram & Hologram Reveal)
+    // Timeline phases (Streamlined total ≈ 2.0s)
+    // 0.0s - 0.6s: Phase 1 (Kernel Boot)
+    // 0.6s - 1.3s: Phase 2 (Monogram & Telemetry)
     const p2Timer = setTimeout(() => {
       setPhase(2);
-    }, 1800);
+    }, 600);
 
-    // 3.8s: Phase 3 (Telemetry Verification & Core Nodes Lock)
+    // 1.3s - 1.8s: Phase 3 (Portal Warp & Split Reveal)
     const p3Timer = setTimeout(() => {
       setPhase(3);
-    }, 3800);
-
-    // 5.4s: Phase 4 (Portal Warp & Split Reveal)
-    const p4Timer = setTimeout(() => {
-      setPhase(4);
       setIsSplitting(true);
-    }, 5400);
+    }, 1300);
 
-    // 6.2s: Complete
+    // 1.9s: Complete
     const finishTimer = setTimeout(() => {
       finishIntro();
-    }, 6200);
+    }, 1900);
 
-    timersRef.current.push(p2Timer, p3Timer, p4Timer, finishTimer);
+    timersRef.current.push(p2Timer, p3Timer, finishTimer);
   }, [variant, finishIntro, clearAllTimers]);
 
   const replayIntro = useCallback(() => {
     startSequence();
   }, [startSequence]);
 
-  // Initial mount trigger
+  // Initial mount trigger only if not previously seen in this session and not reduced motion
   useEffect(() => {
-    startSequence();
+    if (!hasSeenInSession && !prefersReduced) {
+      startSequence();
+    }
     return () => clearAllTimers();
-  }, [startSequence, clearAllTimers]);
+  }, [hasSeenInSession, prefersReduced, startSequence, clearAllTimers]);
 
   // Global keydown: ESC or Enter skips intro
   useEffect(() => {

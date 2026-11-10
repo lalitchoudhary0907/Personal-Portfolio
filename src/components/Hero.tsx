@@ -9,6 +9,7 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useMagnetic } from '../hooks/useMagnetic';
 import { Kicker } from './Typography';
 import { PortraitFrame } from './PortraitFrame';
+import { Hero3DStage } from './Hero3DStage';
 
 interface HeroProps {
   introDone?: boolean;
@@ -198,7 +199,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
       id="top"
       ref={heroRef}
       aria-label="Introduction"
-      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(5.5rem,calc(4.75rem+env(safe-area-inset-top)))] pb-[max(2rem,calc(1.75rem+env(safe-area-inset-bottom)))] px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
+      className="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-between pt-[max(5.5rem,calc(4.75rem+env(safe-area-inset-top)))] pb-12 sm:pb-16 px-6 sm:px-10 max-w-7xl mx-auto w-full select-none"
     >
       {/* Top Meta Bar */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 pb-4 border-b border-[var(--line)]">
@@ -373,75 +374,55 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
         <div className="lg:col-span-5 flex flex-col justify-center gap-5">
           {/* Integrated Real Portrait Card with Pointer Tilt & Photographic Light */}
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 24, scale: shouldReveal ? 1 : 0.96 }}
-            transition={{ duration: 0.8, delay: prefersReduced ? 0 : 0.22, ease: [0.76, 0, 0.24, 1] }}
-            className="flex flex-col sm:flex-row items-center gap-5 p-4 sm:p-5 rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/90 backdrop-blur-xl shadow-2xl relative overflow-hidden group"
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 20, scale: shouldReveal ? 1 : 0.98 }}
+            transition={{ duration: 0.7, delay: prefersReduced ? 0 : 0.22, ease: [0.76, 0, 0.24, 1] }}
+            className="flex items-center gap-4 sm:gap-5 p-3.5 sm:p-4 rounded-2xl border border-[var(--border-bright)] bg-[var(--paper-deep)]/90 backdrop-blur-xl shadow-xl relative overflow-hidden group"
           >
             {/* Ambient Optical Light Gradient */}
             <div
               aria-hidden="true"
-              className="absolute -top-24 -right-24 w-60 h-60 rounded-full blur-3xl pointer-events-none transition-colors duration-700"
+              className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-700"
               style={{
                 background: `radial-gradient(circle, var(--primary-glow) 0%, transparent 70%)`,
               }}
             />
 
             {/* Authentic Real Portrait with Perspective Movement */}
-            <div className="w-36 h-36 sm:w-40 sm:h-40 shrink-0">
-              <PortraitFrame size="hero" priority={true} className="w-full h-full" />
+            <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+              <PortraitFrame size="about" priority={true} className="w-full h-full" />
             </div>
 
             {/* Micro Specification Identity alongside Portrait */}
-            <div className="flex-1 space-y-2 text-left sm:text-left">
+            <div className="flex-1 space-y-1 text-left min-w-0">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--secondary)] font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--secondary)] font-semibold truncate">
                   Architectural Profile
                 </span>
+                <span className="text-[var(--ink-muted)]/40 text-[9px]">·</span>
+                <span className="font-mono text-[9px] text-[var(--accent)] font-medium">Open to Learning ✦</span>
               </div>
-              <h2 className="font-display font-bold text-base text-[var(--ink)] leading-snug">
+              <h2 className="font-display font-bold text-base text-[var(--ink)] leading-tight truncate">
                 Lalit Choudhary
               </h2>
-              <p className="font-mono text-[11px] text-[var(--primary)]">
+              <p className="font-mono text-[10px] text-[var(--primary)] truncate">
                 First-Year B.Tech CS &amp; AI · Newton School of Tech
               </p>
-              <p className="font-display text-xs text-[var(--ink-muted)] leading-relaxed">
-                Exploring full-stack web development, Python, and quantitative challenges.
+              <p className="font-display text-[11px] text-[var(--ink-muted)] leading-snug line-clamp-1">
+                Full-stack web systems, Python &amp; quantitative challenges.
               </p>
-              <div className="flex items-center justify-between font-mono text-[10px] text-[var(--secondary)] pt-2 border-t border-[var(--line)]">
-                <span>Sonipat, Haryana</span>
-                <span className="text-[var(--accent)] font-medium">Open to Learning ✦</span>
-              </div>
             </div>
           </motion.div>
 
-          {/* Reserved Structural Stage Container for Upcoming WebGL Scene (Part 5) */}
+          {/* Interactive 3D Computational Sculpture Stage (Part 5) */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: shouldReveal ? 1 : 0, y: shouldReveal ? 0 : 16 }}
             transition={{ duration: 0.7, delay: prefersReduced ? 0 : 0.32, ease: [0.76, 0, 0.24, 1] }}
-            className="p-4 sm:p-5 rounded-2xl border border-[var(--line)] bg-[var(--paper)]/50 backdrop-blur-md relative overflow-hidden"
+            className="w-full"
           >
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-[10px] uppercase tracking-wider text-[var(--ink-muted)]">
-                Technical Highlights
-              </span>
-              <span className="text-[10px] text-[var(--secondary)]">FocusFlow · WorldQuant Brain · Open Source</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs font-mono text-[var(--ink-muted)] pt-2.5">
-              <span className="text-[var(--ink)]">Python</span>
-              <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
-              <span className="text-[var(--ink)]">JavaScript</span>
-              <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
-              <span className="text-[var(--ink)]">TypeScript</span>
-              <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
-              <span className="text-[var(--ink)]">HTML/CSS</span>
-              <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
-              <span className="text-[var(--ink)]">React</span>
-              <span className="text-[var(--ink-muted)]/40" aria-hidden="true">·</span>
-              <span className="text-[var(--primary)]">Git &amp; GitHub</span>
-            </div>
+            <Hero3DStage />
           </motion.div>
         </div>
       </div>

@@ -4,327 +4,234 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useTheme } from '../context/ThemeContext';
-
-interface Dot {
-  x: number;
-  y: number;
-  baseX: number;
-  baseY: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  color: string;
-  glowColor: string;
-  phase: number;
-  phaseSpeed: number;
-}
-
-interface Ripple {
-  x: number;
-  y: number;
-  radius: number;
-  maxRadius: number;
-  alpha: number;
-}
+import { backgroundVertexShader, backgroundFragmentShader } from '../webgl/shaders/backgroundShader';
+import { webglCoordinator, detectSoftwareGl } from '../webgl/webglCoordinator';
 
 export const AmbientBackground: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fallbackCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const prefersReduced = usePrefersReducedMotion();
-  const [isTabVisible, setIsTabVisible] = useState(true);
   const { activePalette } = useTheme();
 
+  const [useWebGL, setUseWebGL] = useState(true);
+
+  // Normalized pointer coordinates [-1, 1]
+  const pointerRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0, intensity: 0 });
+
+  // WebGL Renderer & Scene references
+  const threeRefs = useRef<{
+    renderer: THREE.WebGLRenderer;
+    scene: THREE.Scene;
+    camera: THREE.OrthographicCamera;
+    material: THREE.ShaderMaterial;
+    mesh: THREE.Mesh;
+    unsubscribe: () => void;
+  } | null>(null);
+
+  // Track pointer movements
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      setIsTabVisible(!document.hidden);
+    const handlePointerMove = (e: PointerEvent) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = -(e.clientY / window.innerHeight) * 2 + 1;
+      pointerRef.current.targetX = nx;
+      pointerRef.current.targetY = ny;
+      pointerRef.current.intensity = 1.0;
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+    const handlePointerLeave = () => {
+      pointerRef.current.intensity = 0.0;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerleave', handlePointerLeave);
+    };
   }, []);
 
+  // Initialize WebGL Scene
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    let renderer: THREE.WebGLRenderer;
+    const isSoftware = detectSoftwareGl();
 
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    // Mouse coordinates and interaction
-    const pointer = {
-      x: -1000,
-      y: -1000,
-      radius: 140,
-    };
-
-    const ripples: Ripple[] = [];
-
-    // Dot density scaled to viewport size
-    const dotCount = Math.floor(Math.min(130, Math.max(50, (width * height) / 14000)));
-    const dots: Dot[] = [];
-
-    const pColor = activePalette.colors.primary;
-    const aColor = activePalette.colors.accent;
-    const sColor = activePalette.colors.secondary;
-    const tColor = activePalette.colors.text;
-
-    const colors = [
-      { fill: `${pColor}bb`, glow: `${pColor}66` },
-      { fill: `${sColor}aa`, glow: `${sColor}55` },
-      { fill: `${tColor}99`, glow: `${tColor}44` },
-      { fill: `${aColor}bb`, glow: `${aColor}66` },
-    ];
-
-    for (let i = 0; i < dotCount; i++) {
-      const palette = colors[Math.floor(Math.random() * colors.length)];
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      dots.push({
-        x,
-        y,
-        baseX: x,
-        baseY: y,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        radius: Math.random() * 1.6 + 1.2,
-        color: palette.fill,
-        glowColor: palette.glow,
-        phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.015 + Math.random() * 0.02,
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: false,
+        antialias: false, // fragment shader handles antialiasing
+        powerPreference: 'high-performance',
+        depth: false,
+        stencil: false,
       });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setPixelRatio(isSoftware ? 1 : Math.min(window.devicePixelRatio, 1.5));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    } catch (e) {
+      console.warn('[AmbientBackground] WebGL initialization failed, using 2D fallback:', e);
+      setUseWebGL(false);
+      return;
     }
 
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      uPointer: { value: new THREE.Vector2(0, 0) },
+      uPointerIntensity: { value: 0 },
+      uQuality: { value: isSoftware ? 0.5 : 1.0 },
+      uBgColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.backgroundVec3) },
+      uPrimaryColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.primaryVec3) },
+      uSecondaryColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.secondaryVec3) },
+      uAccentColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.accentVec3) },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader: backgroundVertexShader,
+      fragmentShader: backgroundFragmentShader,
+      uniforms,
+      depthTest: false,
+      depthWrite: false,
+    });
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // Resize Handler
     const handleResize = () => {
-      if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      uniforms.uResolution.value.set(width, height);
     };
-
-    const handlePointerMove = (e: MouseEvent) => {
-      pointer.x = e.clientX;
-      pointer.y = e.clientY;
-    };
-
-    const handlePointerLeave = () => {
-      pointer.x = -1000;
-      pointer.y = -1000;
-    };
-
-    const handleClick = (e: MouseEvent) => {
-      ripples.push({
-        x: e.clientX,
-        y: e.clientY,
-        radius: 0,
-        maxRadius: 180,
-        alpha: 0.7,
-      });
-    };
-
-    handleResize();
     window.addEventListener('resize', handleResize, { passive: true });
-    window.addEventListener('mousemove', handlePointerMove, { passive: true });
-    window.addEventListener('mouseleave', handlePointerLeave, { passive: true });
-    window.addEventListener('click', handleClick, { passive: true });
 
-    let lastTime = performance.now();
+    // Target color vectors for smooth lerping
+    const targetBg = new THREE.Vector3(...activePalette.shaderUniforms.backgroundVec3);
+    const targetPrim = new THREE.Vector3(...activePalette.shaderUniforms.primaryVec3);
+    const targetSec = new THREE.Vector3(...activePalette.shaderUniforms.secondaryVec3);
+    const targetAcc = new THREE.Vector3(...activePalette.shaderUniforms.accentVec3);
 
-    const render = (time: number) => {
-      if (!isTabVisible) {
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
+    // Frame update subscribed to centralized coordinator
+    const unsubscribe = webglCoordinator.subscribe((time, delta) => {
+      // Smooth pointer interpolation
+      const ptr = pointerRef.current;
+      ptr.x += (ptr.targetX - ptr.x) * 0.08;
+      ptr.y += (ptr.targetY - ptr.y) * 0.08;
+      ptr.intensity += (0 - ptr.intensity) * 0.02; // slowly decay if idle
 
-      ctx.clearRect(0, 0, width, height);
+      uniforms.uTime.value = prefersReduced ? 1.0 : time;
+      uniforms.uPointer.value.set(ptr.x, ptr.y);
+      uniforms.uPointerIntensity.value = prefersReduced ? 0.3 : Math.max(0.2, ptr.intensity);
 
-      // Render ripples
-      for (let r = ripples.length - 1; r >= 0; r--) {
-        const rip = ripples[r];
-        rip.radius += 3.5;
-        rip.alpha *= 0.94;
+      // Smooth color transitions when palette switches
+      targetBg.set(...activePalette.shaderUniforms.backgroundVec3);
+      targetPrim.set(...activePalette.shaderUniforms.primaryVec3);
+      targetSec.set(...activePalette.shaderUniforms.secondaryVec3);
+      targetAcc.set(...activePalette.shaderUniforms.accentVec3);
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = pColor;
-        ctx.globalAlpha = Math.max(0, rip.alpha * 0.45);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
+      uniforms.uBgColor.value.lerp(targetBg, 0.06);
+      uniforms.uPrimaryColor.value.lerp(targetPrim, 0.06);
+      uniforms.uSecondaryColor.value.lerp(targetSec, 0.06);
+      uniforms.uAccentColor.value.lerp(targetAcc, 0.06);
 
-        if (rip.alpha < 0.02 || rip.radius > rip.maxRadius) {
-          ripples.splice(r, 1);
-        }
-      }
+      renderer.render(scene, camera);
+    });
 
-      // Update and draw dots
-      for (let i = 0; i < dots.length; i++) {
-        const dot = dots[i];
-
-        if (!prefersReduced) {
-          // Fluid harmonic drift
-          dot.phase += dot.phaseSpeed;
-          dot.x += dot.vx + Math.cos(dot.phase) * 0.25;
-          dot.y += dot.vy + Math.sin(dot.phase) * 0.25;
-
-          // Wrap around canvas boundaries fluidly
-          if (dot.x < -20) dot.x = width + 20;
-          if (dot.x > width + 20) dot.x = -20;
-          if (dot.y < -20) dot.y = height + 20;
-          if (dot.y > height + 20) dot.y = -20;
-
-          // Pointer fluid repulsion & elastic spring
-          const dx = pointer.x - dot.x;
-          const dy = pointer.y - dot.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < pointer.radius && dist > 0) {
-            const force = (pointer.radius - dist) / pointer.radius;
-            const angle = Math.atan2(dy, dx);
-            dot.x -= Math.cos(angle) * force * 3.5;
-            dot.y -= Math.sin(angle) * force * 3.5;
-          }
-
-          // Ripples push dots
-          for (const rip of ripples) {
-            const rdx = dot.x - rip.x;
-            const rdy = dot.y - rip.y;
-            const rdist = Math.sqrt(rdx * rdx + rdy * rdy);
-            if (Math.abs(rdist - rip.radius) < 25) {
-              const push = (25 - Math.abs(rdist - rip.radius)) * 0.08 * rip.alpha;
-              const rAngle = Math.atan2(rdy, rdx);
-              dot.x += Math.cos(rAngle) * push;
-              dot.y += Math.sin(rAngle) * push;
-            }
-          }
-        }
-
-        // Draw Dot with subtle glow
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = dot.color;
-        ctx.shadowColor = dot.glowColor;
-        ctx.shadowBlur = 6;
-        ctx.fill();
-        ctx.shadowBlur = 0; // reset
-      }
-
-      // Draw dynamic connecting filaments between close dots
-      const maxConnDist = 110;
-      for (let i = 0; i < dots.length; i++) {
-        for (let j = i + 1; j < dots.length; j++) {
-          const dx = dots[i].x - dots[j].x;
-          const dy = dots[i].y - dots[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < maxConnDist) {
-            const alpha = (1 - dist / maxConnDist) * 0.22;
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = pColor;
-            ctx.globalAlpha = Math.max(0, alpha);
-            ctx.lineWidth = 0.75;
-            ctx.stroke();
-            ctx.restore();
-          }
-        }
-
-        // Connect nearby dots to pointer if close
-        if (pointer.x > 0) {
-          const pdx = dots[i].x - pointer.x;
-          const pdy = dots[i].y - pointer.y;
-          const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
-          if (pdist < pointer.radius) {
-            const pAlpha = (1 - pdist / pointer.radius) * 0.35;
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(pointer.x, pointer.y);
-            ctx.strokeStyle = aColor;
-            ctx.globalAlpha = Math.max(0, pAlpha);
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.restore();
-          }
-        }
-      }
-
-      if (!prefersReduced) {
-        animationFrameId = requestAnimationFrame(render);
-      }
+    threeRefs.current = {
+      renderer,
+      scene,
+      camera,
+      material,
+      mesh,
+      unsubscribe,
     };
-
-    animationFrameId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handlePointerMove);
-      window.removeEventListener('mouseleave', handlePointerLeave);
-      window.removeEventListener('click', handleClick);
-      cancelAnimationFrame(animationFrameId);
+      unsubscribe();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+      threeRefs.current = null;
     };
-  }, [isTabVisible, prefersReduced, activePalette]);
+  }, [prefersReduced]);
+
+  // Update target palette colors when activePalette changes
+  useEffect(() => {
+    if (!threeRefs.current) return;
+    const { material } = threeRefs.current;
+    const u = material.uniforms;
+    if (u) {
+      // Vectors will lerp towards new targets in the render frame loop
+    }
+  }, [activePalette]);
+
+  // 2D Canvas Fallback if WebGL unavailable
+  useEffect(() => {
+    if (useWebGL) return;
+    const canvas = fallbackCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const unsubscribe = webglCoordinator.subscribe((time) => {
+      ctx.fillStyle = activePalette.colors.background;
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle atmospheric center gradient
+      const grad = ctx.createRadialGradient(
+        width / 2,
+        height / 2,
+        0,
+        width / 2,
+        height / 2,
+        Math.max(width, height) * 0.7
+      );
+      grad.addColorStop(0, activePalette.colors.surface);
+      grad.addColorStop(1, activePalette.colors.background);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+    });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      unsubscribe();
+    };
+  }, [useWebGL, activePalette]);
 
   return (
     <div
+      ref={containerRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none bg-[var(--paper)] transition-colors duration-700"
+      className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none bg-[var(--paper)] transition-colors duration-700"
     >
-      {/* 1. Subtle Cyber Grid Hairlines */}
-      <div
-        className="absolute inset-0 opacity-[0.035]"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '48px 48px',
-        }}
-      />
-
-      {/* 2. Floating Fluid Chromatic Glow Orbs with dynamic palette colors */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none transition-all duration-700">
-        {/* Primary Fluid Orb (Top Left -> Center) */}
-        <div
-          className="absolute -top-[15%] -left-[10%] w-[58vw] h-[58vw] rounded-full blur-[130px] animate-fluid-orb-1 transition-all duration-700"
-          style={{
-            background: `radial-gradient(circle, ${activePalette.colors.primary}25 0%, ${activePalette.colors.secondary}15 45%, transparent 70%)`,
-          }}
-        />
-
-        {/* Accent / Secondary Fluid Orb (Bottom Right -> Center) */}
-        <div
-          className="absolute -bottom-[20%] -right-[10%] w-[62vw] h-[62vw] rounded-full blur-[140px] animate-fluid-orb-2 transition-all duration-700"
-          style={{
-            background: `radial-gradient(circle, ${activePalette.colors.accent}22 0%, ${activePalette.colors.primary}12 45%, transparent 70%)`,
-          }}
-        />
-
-        {/* Subtle Accent Core Glow (Center Accent) */}
-        <div
-          className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full blur-[160px] animate-pulse transition-all duration-700"
-          style={{
-            background: `radial-gradient(circle, ${activePalette.colors.accent}14 0%, transparent 65%)`,
-          }}
-        />
-      </div>
-
-      {/* 3. High-Performance Interactive Fluid Dot & Filament Canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      />
+      {useWebGL ? (
+        <canvas ref={canvasRef} className="w-full h-full block" />
+      ) : (
+        <canvas ref={fallbackCanvasRef} className="w-full h-full block" />
+      )}
     </div>
   );
 };
