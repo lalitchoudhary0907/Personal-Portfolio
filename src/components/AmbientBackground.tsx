@@ -9,6 +9,7 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useTheme } from '../context/ThemeContext';
 import { backgroundVertexShader, backgroundFragmentShader } from '../webgl/shaders/backgroundShader';
 import { webglCoordinator, detectSoftwareGl } from '../webgl/webglCoordinator';
+import { scrollBus } from '../utils/scrollBus';
 
 export const AmbientBackground: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -91,6 +92,8 @@ export const AmbientBackground: React.FC = () => {
       uPointer: { value: new THREE.Vector2(0, 0) },
       uPointerIntensity: { value: 0 },
       uQuality: { value: isSoftware ? 0.5 : 1.0 },
+      uScrollProgress: { value: 0 },
+      uScrollVelocity: { value: 0 },
       uBgColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.backgroundVec3) },
       uPrimaryColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.primaryVec3) },
       uSecondaryColor: { value: new THREE.Vector3(...activePalette.shaderUniforms.secondaryVec3) },
@@ -124,6 +127,9 @@ export const AmbientBackground: React.FC = () => {
     const targetSec = new THREE.Vector3(...activePalette.shaderUniforms.secondaryVec3);
     const targetAcc = new THREE.Vector3(...activePalette.shaderUniforms.accentVec3);
 
+    let smoothScrollProg = 0;
+    let smoothScrollVel = 0;
+
     // Frame update subscribed to centralized coordinator
     const unsubscribe = webglCoordinator.subscribe((time, delta) => {
       // Smooth pointer interpolation
@@ -132,9 +138,16 @@ export const AmbientBackground: React.FC = () => {
       ptr.y += (ptr.targetY - ptr.y) * 0.08;
       ptr.intensity += (0 - ptr.intensity) * 0.02; // slowly decay if idle
 
+      // Synchronize scroll state from ScrollBus
+      const scrollState = scrollBus.getState();
+      smoothScrollProg += (scrollState.progress - smoothScrollProg) * 0.1;
+      smoothScrollVel += (scrollState.velocity - smoothScrollVel) * 0.12;
+
       uniforms.uTime.value = prefersReduced ? 1.0 : time;
       uniforms.uPointer.value.set(ptr.x, ptr.y);
       uniforms.uPointerIntensity.value = prefersReduced ? 0.3 : Math.max(0.2, ptr.intensity);
+      uniforms.uScrollProgress.value = prefersReduced ? 0 : smoothScrollProg;
+      uniforms.uScrollVelocity.value = prefersReduced ? 0 : smoothScrollVel;
 
       // Smooth color transitions when palette switches
       targetBg.set(...activePalette.shaderUniforms.backgroundVec3);

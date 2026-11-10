@@ -9,6 +9,7 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useTheme } from '../context/ThemeContext';
 import { ComputationalSculpture } from '../webgl/sculpture/ComputationalSculpture';
 import { webglCoordinator, detectSoftwareGl } from '../webgl/webglCoordinator';
+import { scrollBus } from '../utils/scrollBus';
 
 interface Hero3DStageProps {
   className?: string;
@@ -160,6 +161,8 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
     const secondaryCol = new THREE.Color(activePalette.colors.secondary);
     const accentCol = new THREE.Color(activePalette.colors.accent);
 
+    let smoothHeroScroll = 0;
+
     // Master RAF subscription via centralized coordinator
     const unsubscribe = webglCoordinator.subscribe((time, delta) => {
       if (!interactionRef.current.isVisible) return;
@@ -168,6 +171,11 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
       secondaryCol.set(activePalette.colors.secondary);
       accentCol.set(activePalette.colors.accent);
 
+      // Calculate hero scroll progression
+      const scrollState = scrollBus.getState();
+      const heroScrollProgress = Math.max(0, Math.min(1.2, scrollState.scroll / Math.max(window.innerHeight * 0.9, 1)));
+      smoothHeroScroll += (heroScrollProgress - smoothHeroScroll) * 0.1;
+
       sculpture.update({
         delta,
         time,
@@ -175,6 +183,8 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
         dragDelta: interactionRef.current.dragDelta,
         isHovered,
         isReducedMotion: prefersReduced,
+        scrollProgress: prefersReduced ? 0 : smoothHeroScroll,
+        scrollVelocity: prefersReduced ? 0 : scrollState.velocity,
         colors: {
           primary: primaryCol,
           secondary: secondaryCol,

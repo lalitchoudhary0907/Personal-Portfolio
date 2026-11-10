@@ -12,6 +12,8 @@ export interface SculptureUpdateParams {
   dragDelta: { x: number; y: number };
   isHovered: boolean;
   isReducedMotion: boolean;
+  scrollProgress?: number;
+  scrollVelocity?: number;
   colors: {
     primary: THREE.Color;
     secondary: THREE.Color;
@@ -300,8 +302,12 @@ export class ComputationalSculpture {
     this.currentRotation.x += (this.targetRotation.x - this.currentRotation.x) * spring;
     this.currentRotation.y += (this.targetRotation.y - this.currentRotation.y) * spring;
 
-    this.group.rotation.x = this.currentRotation.x;
+    const scrollTilt = (params.scrollProgress ?? 0) * 0.38;
+    const scrollZ = -(params.scrollProgress ?? 0) * 0.75;
+
+    this.group.rotation.x = this.currentRotation.x + scrollTilt;
     this.group.rotation.y = this.currentRotation.y;
+    this.group.position.z = scrollZ;
 
     // Organic floating breathing
     this.floatOffset = Math.sin(time * 0.8) * 0.055;

@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useMagnetic } from '../hooks/useMagnetic';
+import { useScrollTo } from '../context/ScrollContext';
 import { Kicker } from './Typography';
 import { PortraitFrame } from './PortraitFrame';
 import { Hero3DStage } from './Hero3DStage';
@@ -16,6 +17,7 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
+  const scrollTo = useScrollTo();
   const prefersReduced = usePrefersReducedMotion();
   const heroRef = useRef<HTMLElement>(null);
   const shouldReveal = introDone || prefersReduced;
@@ -339,6 +341,11 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
               ref={primaryCtaMagnetic.ref}
               style={primaryCtaMagnetic.style}
               href="#projects"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo('#projects', { offset: -30 });
+                window.history.pushState(null, '', '#projects');
+              }}
               data-cursor="link"
               className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider font-semibold transition-all hover:opacity-95 active:scale-95 shadow-[0_0_24px_var(--primary-glow)]"
             >
@@ -350,6 +357,11 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
               ref={secondaryCtaMagnetic.ref}
               style={secondaryCtaMagnetic.style}
               href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo('#contact', { offset: -30 });
+                window.history.pushState(null, '', '#contact');
+              }}
               data-cursor="link"
               className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--paper-deep)] hover:bg-[var(--paper-card)] border border-[var(--border-bright)] hover:border-[var(--primary)] text-[var(--ink)] font-mono text-xs uppercase tracking-wider transition-all"
             >
@@ -361,6 +373,11 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
               ref={honorLinkMagnetic.ref}
               style={honorLinkMagnetic.style}
               href="#achievements"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo('#achievements', { offset: -30 });
+                window.history.pushState(null, '', '#achievements');
+              }}
               data-cursor="link"
               className="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 text-[var(--secondary)] hover:text-[var(--accent)] font-mono text-xs transition-colors"
             >
@@ -438,7 +455,7 @@ export const Hero: React.FC<HeroProps> = ({ introDone = true }) => {
             href="#projects"
             onClick={(e) => {
               e.preventDefault();
-              document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
+              scrollTo('#projects', { offset: -30 });
               window.history.pushState(null, '', '#projects');
             }}
             data-cursor="link"

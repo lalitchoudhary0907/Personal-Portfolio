@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { useMagnetic } from '../hooks/useMagnetic';
+import { useScrollTo, useActiveSection } from '../context/ScrollContext';
 
 interface NavItem {
   label: string;
@@ -21,7 +22,9 @@ const NAV_ITEMS: NavItem[] = [
 const MagneticNavLink: React.FC<{
   href: string;
   label: string;
-}> = ({ href, label }) => {
+  isActive: boolean;
+}> = ({ href, label, isActive }) => {
+  const scrollTo = useScrollTo();
   const { ref, style } = useMagnetic<HTMLAnchorElement>({
     radius: 70,
     pullFactor: 0.25,
@@ -29,12 +32,9 @@ const MagneticNavLink: React.FC<{
   });
 
   const handleClick = (e: React.MouseEvent) => {
-    const target = document.querySelector(href);
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
-      window.history.pushState(null, '', href);
-    }
+    e.preventDefault();
+    scrollTo(href, { offset: -30 });
+    window.history.pushState(null, '', href);
   };
 
   return (
@@ -44,19 +44,28 @@ const MagneticNavLink: React.FC<{
       href={href}
       onClick={handleClick}
       data-cursor="link"
-      className="group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)] hover:text-[var(--primary)] transition-colors inline-flex items-center"
+      className={`group relative min-h-[44px] px-2 font-mono text-[12px] uppercase tracking-[0.14em] transition-colors inline-flex items-center gap-1.5 ${
+        isActive ? 'text-[var(--primary)] font-semibold' : 'text-[var(--ink)] hover:text-[var(--primary)]'
+      }`}
     >
+      {isActive && (
+        <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+      )}
       <span>{label}</span>
-      {/* Underline that draws from left to right on hover */}
+      {/* Underline that draws from left to right on hover or stays when active */}
       <span
         aria-hidden="true"
-        className="absolute bottom-2 left-2 right-2 h-[1.5px] bg-[var(--primary)] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ease-out"
+        className={`absolute bottom-2 left-2 right-2 h-[1.5px] bg-[var(--primary)] transition-transform duration-300 origin-left ease-out ${
+          isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+        }`}
       />
     </motion.a>
   );
 };
 
 export const Header: React.FC = () => {
+  const scrollTo = useScrollTo();
+  const activeSection = useActiveSection();
   const [isVisible, setIsVisible] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
@@ -172,7 +181,7 @@ export const Header: React.FC = () => {
             href="#top"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              scrollTo('#top');
               window.history.pushState(null, '', '#top');
             }}
             data-cursor="link"
@@ -192,6 +201,7 @@ export const Header: React.FC = () => {
                 key={item.label}
                 href={item.href}
                 label={item.label}
+                isActive={activeSection === item.href}
               />
             ))}
             <button
@@ -265,15 +275,10 @@ export const Header: React.FC = () => {
                   key={item.label}
                   href={item.href}
                   onClick={(e) => {
-                    const target = document.querySelector(item.href);
-                    if (target) {
-                      e.preventDefault();
-                      closeMenu();
-                      target.scrollIntoView({ behavior: 'smooth' });
-                      window.history.pushState(null, '', item.href);
-                    } else {
-                      closeMenu();
-                    }
+                    e.preventDefault();
+                    closeMenu();
+                    scrollTo(item.href, { offset: -30 });
+                    window.history.pushState(null, '', item.href);
                   }}
                   data-cursor="link"
                   className="group flex items-baseline justify-between font-display text-[clamp(2.5rem,10vw,4.5rem)] font-bold tracking-tight text-[var(--ink)] hover:text-[var(--primary)] transition-colors border-b border-[var(--line)] pb-3 cursor-pointer"

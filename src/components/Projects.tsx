@@ -36,11 +36,19 @@ export const Projects: React.FC = () => {
           return (
             <motion.article
               key={project.id}
-              initial={{ opacity: 0, y: prefersReduced ? 0 : 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-10%' }}
+              initial={{
+                opacity: 0,
+                y: prefersReduced ? 0 : 35,
+                clipPath: prefersReduced ? 'none' : 'inset(6% 0% 6% 0%)',
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                clipPath: 'inset(0% 0% 0% 0%)',
+              }}
+              viewport={{ once: true, margin: '-8%' }}
               transition={{
-                duration: prefersReduced ? 0.2 : 0.8,
+                duration: prefersReduced ? 0.2 : 0.85,
                 ease: [0.76, 0, 0.24, 1],
                 delay: prefersReduced ? 0 : index * 0.12,
               }}

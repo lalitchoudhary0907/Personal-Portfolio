@@ -20,6 +20,7 @@ import { useIntro } from './hooks/useIntro';
 import { Cursor } from './components/Cursor';
 import { CursorProvider } from './context/CursorContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ScrollProvider } from './context/ScrollContext';
 import { PaletteSwitcherBar } from './components/PaletteSwitcherBar';
 import { PaletteComparisonModal } from './components/PaletteComparisonModal';
 
@@ -43,59 +44,61 @@ export default function App() {
       {showTokens ? (
         <StyleGuide />
       ) : (
-        <CursorProvider>
-          {isIntroActive && (
-            <Intro
-              isSplitting={isSplitting}
-              phase={phase}
-              progress={progress}
-              variant={variant}
-              onSkip={skipIntro}
-            />
-          )}
+        <ScrollProvider>
+          <CursorProvider>
+            {isIntroActive && (
+              <Intro
+                isSplitting={isSplitting}
+                phase={phase}
+                progress={progress}
+                variant={variant}
+                onSkip={skipIntro}
+              />
+            )}
 
-          {/* Custom Cursor appears only after introDone */}
-          <Cursor introDone={introDone} />
+            {/* Custom Cursor appears only after introDone */}
+            <Cursor introDone={introDone} />
 
-          {/* Ambient floating background with moving fluid orbs, reactive particle mesh and interactive ripples */}
-          <AmbientBackground />
+            {/* Ambient floating background with moving fluid orbs, reactive particle mesh and interactive ripples */}
+            <AmbientBackground />
 
-          <div
-            inert={isIntroActive || undefined}
-            className="min-h-screen flex flex-col bg-[var(--paper)] text-[var(--ink)] overflow-x-hidden transition-colors duration-500"
-          >
-            {/* Skip to Content Link */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 min-h-[44px] min-w-[44px] px-5 py-3 inline-flex items-center justify-center bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider outline-none"
+            <div
+              inert={isIntroActive || undefined}
+              className="min-h-screen flex flex-col bg-[var(--paper)] text-[var(--ink)] overflow-x-hidden transition-colors duration-500"
             >
-              Skip to content
-            </a>
+              {/* Skip to Content Link */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 min-h-[44px] min-w-[44px] px-5 py-3 inline-flex items-center justify-center bg-[var(--primary)] text-[var(--paper)] font-mono text-xs uppercase tracking-wider outline-none"
+              >
+                Skip to content
+              </a>
 
-            {/* Semantic Header Landmark with dynamic scroll progress bar */}
-            <Header />
+              {/* Semantic Header Landmark with dynamic scroll progress bar */}
+              <Header />
 
-            {/* Semantic Main Landmark hosting dynamic scrolling sections */}
-            <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
-              <Hero introDone={introDone} />
-              <StripsBand />
-              <Projects />
-              <About />
-              <Skills />
-              <Achievements />
-              <Contact />
-            </main>
+              {/* Semantic Main Landmark hosting dynamic scrolling sections */}
+              <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
+                <Hero introDone={introDone} />
+                <StripsBand />
+                <Projects />
+                <About />
+                <Skills />
+                <Achievements />
+                <Contact />
+              </main>
 
-            {/* Semantic Footer Landmark */}
-            <Footer />
-          </div>
+              {/* Semantic Footer Landmark */}
+              <Footer />
+            </div>
 
-          {/* Interactive Palette Switcher HUD Bar */}
-          <PaletteSwitcherBar />
+            {/* Interactive Palette Switcher HUD Bar */}
+            <PaletteSwitcherBar />
 
-          {/* Full-Featured Palette Exploration Studio Modal */}
-          <PaletteComparisonModal />
-        </CursorProvider>
+            {/* Full-Featured Palette Exploration Studio Modal */}
+            <PaletteComparisonModal />
+          </CursorProvider>
+        </ScrollProvider>
       )}
     </ThemeProvider>
   );

@@ -7,8 +7,10 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { profile } from '../data/profile';
 import { useMagnetic } from '../hooks/useMagnetic';
+import { useScrollTo } from '../context/ScrollContext';
 
 export const Footer: React.FC = () => {
+  const scrollTo = useScrollTo();
   const replayMagnetic = useMagnetic<HTMLButtonElement>({
     radius: 60,
     pullFactor: 0.2,
@@ -23,12 +25,12 @@ export const Footer: React.FC = () => {
 
   const handleReplayIntro = () => {
     window.dispatchEvent(new CustomEvent('replay_intro'));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollTo('#top');
   };
 
   const handleBackToTop = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollTo('#top');
     window.history.pushState(null, '', '#top');
   };
 

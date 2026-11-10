@@ -34,6 +34,8 @@ export const backgroundFragmentShader = /* glsl */ `
   uniform vec3 uAccentColor;
   uniform float uPointerIntensity;
   uniform float uQuality; // 1.0 = high, 0.5 = low/software
+  uniform float uScrollProgress; // Normalized page scroll [0, 1]
+  uniform float uScrollVelocity; // Normalized scroll speed
 
   varying vec2 vUv;
 
@@ -81,12 +83,15 @@ export const backgroundFragmentShader = /* glsl */ `
     float mouseLens = smoothstep(1.2, 0.0, distToMouse) * uPointerIntensity * 0.15;
     vec2 flowOffset = (distToMouse > 0.001) ? normalize(p - mouse) * mouseLens : vec2(0.0);
 
-    vec2 distortedP = p + flowOffset;
+    // Scroll-synchronized vertical parallax & velocity kinetic impulse
+    float scrollShift = uScrollProgress * 1.2;
+    float velocityImpulse = clamp(uScrollVelocity * 0.0015, -0.2, 0.2);
+    vec2 distortedP = p + flowOffset + vec2(velocityImpulse * 0.4, scrollShift * 0.35);
 
     // Multi-octave procedural fluid movement
     float t = uTime * 0.035;
-    float noiseA = snoise(distortedP * 0.85 + vec2(t * 0.7, t * 0.5));
-    float noiseB = snoise(distortedP * 1.8 - vec2(t * 0.9, noiseA * 0.45));
+    float noiseA = snoise(distortedP * 0.85 + vec2(t * 0.7, t * 0.5 + scrollShift * 0.5));
+    float noiseB = snoise(distortedP * 1.8 - vec2(t * 0.9 + velocityImpulse, noiseA * 0.45));
     float fluid = noiseA * 0.65 + noiseB * 0.35;
 
     // Deep atmospheric base gradient
@@ -106,9 +111,9 @@ export const backgroundFragmentShader = /* glsl */ `
     float wave = smoothstep(0.60, 0.66, noiseA) * 0.05;
     col += uSecondaryColor * wave;
 
-    // Fine computational architectural grid
+    // Fine computational architectural grid with scroll-drift phase
     vec2 gridScale = vec2(32.0, 32.0 * (uResolution.y / uResolution.x));
-    vec2 gridFract = fract(uv * gridScale);
+    vec2 gridFract = fract((uv + vec2(0.0, uScrollProgress * 0.12)) * gridScale);
     float grid = (step(0.985, gridFract.x) + step(0.985, gridFract.y));
     grid = clamp(grid, 0.0, 1.0) * 0.028;
     col += uAccentColor * grid;
