@@ -252,6 +252,27 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
     }
   };
 
+  // Global safety listener for pointer release or cancel outside container
+  useEffect(() => {
+    const handleGlobalCancel = () => {
+      if (interactionRef.current.isDragging) {
+        interactionRef.current.isDragging = false;
+        setIsDragging(false);
+        resetCursor();
+      }
+    };
+
+    window.addEventListener('pointerup', handleGlobalCancel);
+    window.addEventListener('pointercancel', handleGlobalCancel);
+    window.addEventListener('blur', handleGlobalCancel);
+
+    return () => {
+      window.removeEventListener('pointerup', handleGlobalCancel);
+      window.removeEventListener('pointercancel', handleGlobalCancel);
+      window.removeEventListener('blur', handleGlobalCancel);
+    };
+  }, [resetCursor]);
+
   const handlePointerUp = (e: React.PointerEvent) => {
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
@@ -260,7 +281,23 @@ export const Hero3DStage: React.FC<Hero3DStageProps> = ({ className = '' }) => {
     }
     interactionRef.current.isDragging = false;
     setIsDragging(false);
-    setCursorVariant('3d-scene', 'ROTATE');
+
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const isInside =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+      if (isInside) {
+        setCursorVariant('3d-scene', 'ROTATE');
+      } else {
+        setIsHovered(false);
+        resetCursor();
+      }
+    } else {
+      resetCursor();
+    }
   };
 
   const handleDoubleClick = useCallback(() => {

@@ -21,6 +21,7 @@ import { Cursor } from './components/Cursor';
 import { CursorProvider } from './context/CursorContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ScrollProvider } from './context/ScrollContext';
+import { ProjectWebGLProvider } from './context/ProjectWebGLContext';
 import { PaletteSwitcherBar } from './components/PaletteSwitcherBar';
 import { PaletteComparisonModal } from './components/PaletteComparisonModal';
 
@@ -78,15 +79,17 @@ export default function App() {
               <Header />
 
               {/* Semantic Main Landmark hosting dynamic scrolling sections */}
-              <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
-                <Hero introDone={introDone} />
-                <StripsBand />
-                <Projects />
-                <About />
-                <Skills />
-                <Achievements />
-                <Contact />
-              </main>
+              <ProjectWebGLProvider>
+                <main id="main-content" tabIndex={-1} className="flex-1 w-full outline-none">
+                  <Hero introDone={introDone} />
+                  <StripsBand />
+                  <Projects />
+                  <About />
+                  <Skills />
+                  <Achievements />
+                  <Contact />
+                </main>
+              </ProjectWebGLProvider>
 
               {/* Semantic Footer Landmark */}
               <Footer />

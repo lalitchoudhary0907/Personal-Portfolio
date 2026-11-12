@@ -18,6 +18,7 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
     variant: contextVariant,
     isOnDark: contextIsOnDark,
     label: contextLabel,
+    resetCursor,
   } = useCursor();
 
   const [hasFinePointer, setHasFinePointer] = useState(false);
@@ -81,18 +82,14 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
   useEffect(() => {
     if (!introDone || !hasFinePointer) return;
 
-    const handlePointerMove = (e: PointerEvent) => {
-      dotX.set(e.clientX);
-      dotY.set(e.clientY);
-      if (!isVisibleRef.current) {
-        isVisibleRef.current = true;
-        setIsVisible(true);
-      }
-    };
+    const lastPosRef = { x: -1, y: -1 };
 
-    const handlePointerOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
+    const evaluateTarget = (target: HTMLElement | null) => {
+      if (!target) {
+        setLocalVariant('default');
+        setLocalLabel(undefined);
+        return;
+      }
 
       // Retain native cursor for form elements and content editables
       if (
@@ -140,7 +137,7 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
         return;
       }
 
-      // Check project cards and previews
+      // Check project preview stages
       const projectEl = target.closest('[data-cursor="project"]');
       if (projectEl) {
         setLocalVariant('project');
@@ -171,28 +168,66 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
       setLocalLabel(undefined);
     };
 
+    const handlePointerMove = (e: PointerEvent) => {
+      lastPosRef.x = e.clientX;
+      lastPosRef.y = e.clientY;
+      dotX.set(e.clientX);
+      dotY.set(e.clientY);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
+    };
+
+    const handlePointerOver = (e: MouseEvent) => {
+      evaluateTarget(e.target as HTMLElement | null);
+    };
+
+    const handleScroll = () => {
+      if (lastPosRef.x >= 0 && lastPosRef.y >= 0) {
+        const target = document.elementFromPoint(lastPosRef.x, lastPosRef.y) as HTMLElement | null;
+        evaluateTarget(target);
+      }
+    };
+
+    const handleNavigationReset = () => {
+      setLocalVariant('default');
+      setLocalLabel(undefined);
+      resetCursor();
+    };
+
     const handleMouseLeave = () => {
       isVisibleRef.current = false;
       setIsVisible(false);
+      lastPosRef.x = -1;
+      lastPosRef.y = -1;
     };
 
     const handleWindowBlur = () => {
       isVisibleRef.current = false;
       setIsVisible(false);
+      lastPosRef.x = -1;
+      lastPosRef.y = -1;
     };
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     document.addEventListener('mouseover', handlePointerOver, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('hashchange', handleNavigationReset);
+    window.addEventListener('popstate', handleNavigationReset);
     document.addEventListener('mouseleave', handleMouseLeave);
     window.addEventListener('blur', handleWindowBlur);
 
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('mouseover', handlePointerOver);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleNavigationReset);
+      window.removeEventListener('popstate', handleNavigationReset);
       document.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('blur', handleWindowBlur);
     };
-  }, [introDone, hasFinePointer, dotX, dotY]);
+  }, [introDone, hasFinePointer, dotX, dotY, resetCursor]);
 
   // Don't render until intro is done and device has fine pointer
   if (!introDone || !hasFinePointer) {
@@ -214,9 +249,9 @@ export const Cursor: React.FC<CursorProps> = ({ introDone }) => {
       if (activeLabel) isDotHidden = true;
       break;
     case 'project':
-      ringSize = 'w-[84px] h-[84px]';
-      ringBg = 'bg-[var(--primary)]';
-      ringBorder = 'border-transparent shadow-[0_0_24px_var(--primary-glow)]';
+      ringSize = 'w-[74px] h-[74px]';
+      ringBg = 'bg-[var(--primary)]/90 backdrop-blur-md shadow-[0_0_24px_var(--primary-glow)]';
+      ringBorder = 'border-transparent';
       isDotHidden = true;
       break;
     case '3d-scene':
